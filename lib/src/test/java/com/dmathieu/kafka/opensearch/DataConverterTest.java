@@ -23,8 +23,6 @@ import org.apache.kafka.connect.sink.SinkRecord;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.index.VersionType;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -37,10 +35,10 @@ import java.util.Map;
 import static com.dmathieu.kafka.opensearch.DataConverter.MAP_KEY;
 import static com.dmathieu.kafka.opensearch.DataConverter.MAP_VALUE;
 import static com.dmathieu.kafka.opensearch.DataConverter.TIMESTAMP_FIELD;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DataConverterTest {
   
@@ -55,7 +53,7 @@ public class DataConverterTest {
   private String index;
   private Schema schema;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     props = ElasticsearchSinkConnectorConfigTest.addNecessaryProps(new HashMap<>());
     props.put(ElasticsearchSinkConnectorConfig.IGNORE_KEY_CONFIG, "true");

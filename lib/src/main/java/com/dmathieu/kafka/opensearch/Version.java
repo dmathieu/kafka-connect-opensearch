@@ -25,7 +25,7 @@ public class Version {
   private static final Logger log = LoggerFactory.getLogger(Version.class);
   private static String version = "unknown";
 
-  private static final String VERSION_FILE = "/kafka-connect-elasticsearch-version.properties";
+  private static final String VERSION_FILE = "/kafka-connect-opensearch-version.properties";
 
   static {
     try {
@@ -36,6 +36,7 @@ public class Version {
       }
     } catch (Exception e) {
       log.warn("Error while loading version:", e);
+      version = e.toString();
     }
   }
 

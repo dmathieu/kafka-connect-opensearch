@@ -4,7 +4,8 @@ import com.google.common.collect.ImmutableSet;
 import com.dmathieu.kafka.opensearch.ElasticsearchSinkTask.PartitionPauser;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.connect.sink.SinkTaskContext;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

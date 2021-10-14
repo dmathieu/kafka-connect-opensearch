@@ -21,8 +21,6 @@ import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.DAT
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.DROP_INVALID_MESSAGE_CONFIG;
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.IGNORE_KEY_CONFIG;
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.IGNORE_SCHEMA_CONFIG;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -44,8 +42,10 @@ import org.apache.kafka.connect.sink.ErrantRecordReporter;
 import org.apache.kafka.connect.sink.SinkRecord;
 import org.apache.kafka.connect.sink.SinkTaskContext;
 import org.elasticsearch.action.DocWriteRequest;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +66,7 @@ public class ElasticsearchSinkTaskTest {
     task.start(props, client);
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {
     props = ElasticsearchSinkConnectorConfigTest.addNecessaryProps(new HashMap<>());
     props.put(IGNORE_KEY_CONFIG, "true");
@@ -114,14 +114,16 @@ public class ElasticsearchSinkTaskTest {
     verify(mockReporter, never()).report(eq(notNullRecord), any(ConnectException.class));
   }
 
-  @Test(expected = DataException.class)
+  @Test
   public void testPutFailNullRecords() {
     props.put(BEHAVIOR_ON_NULL_VALUES_CONFIG, BehaviorOnNullValues.FAIL.name());
     setUpTask();
 
-    // fail null
-    SinkRecord nullRecord = record(true, true, 0);
-    task.put(Collections.singletonList(nullRecord));
+    assertThrows(DataException.class, () -> {
+      // fail null
+      SinkRecord nullRecord = record(true, true, 0);
+      task.put(Collections.singletonList(nullRecord));
+    });
   }
 
   @Test
@@ -232,14 +234,16 @@ public class ElasticsearchSinkTaskTest {
     verify(mockReporter, never()).report(eq(validRecord), any(DataException.class));
   }
 
-  @Test(expected = DataException.class)
+  @Test
   public void testPutFailsOnInvalidRecord() {
     props.put(DROP_INVALID_MESSAGE_CONFIG, "false");
     props.put(IGNORE_KEY_CONFIG, "false");
     setUpTask();
 
-    SinkRecord invalidRecord = record();
-    task.put(Collections.singletonList(invalidRecord));
+    assertThrows(DataException.class, () -> {
+      SinkRecord invalidRecord = record();
+      task.put(Collections.singletonList(invalidRecord));
+    });
   }
 
   @Test

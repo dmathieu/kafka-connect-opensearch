@@ -19,8 +19,9 @@ import com.dmathieu.kafka.opensearch.OffsetTracker.OffsetState;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.connect.sink.SinkRecord;
-import org.junit.Test;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableList;
+
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 

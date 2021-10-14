@@ -29,20 +29,22 @@ import org.apache.kafka.connect.data.Time;
 import org.apache.kafka.connect.data.Timestamp;
 import org.apache.kafka.connect.errors.DataException;
 import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.junit.Test;
 
 import static com.dmathieu.kafka.opensearch.Mapping.KEYWORD_TYPE;
 import static com.dmathieu.kafka.opensearch.Mapping.KEY_FIELD;
 import static com.dmathieu.kafka.opensearch.Mapping.TEXT_TYPE;
 import static com.dmathieu.kafka.opensearch.Mapping.VALUE_FIELD;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MappingTest {
 
-  @Test(expected = DataException.class)
+  @Test
   public void testBuildMappingWithNullSchema() {
-    XContentBuilder builder = Mapping.buildMapping(null);
+    assertThrows(DataException.class, () -> {
+      XContentBuilder builder = Mapping.buildMapping(null);
+    });
   }
 
   @Test

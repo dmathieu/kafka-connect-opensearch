@@ -1,39 +1,38 @@
 package com.dmathieu.kafka.opensearch;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.kafka.connect.errors.ConnectException;
 import org.apache.kafka.connect.sink.SinkConnector;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ElasticsearchSinkConnectorTest {
 
   private ElasticsearchSinkConnector connector;
   private Map<String, String> settings;
 
-  @Before
+  @BeforeEach
   public void before() {
     settings = ElasticsearchSinkConnectorConfigTest.addNecessaryProps(new HashMap<>());
     connector = new ElasticsearchSinkConnector();
   }
 
-  @Test(expected = ConnectException.class)
+  @Test
   public void shouldCatchInvalidConfigs() {
-    connector.start(new HashMap<>());
+    assertThrows(ConnectException.class, () -> {
+      connector.start(new HashMap<>());
+    });
   }
 
   @Test
   public void shouldGenerateValidTaskConfigs() {
     connector.start(settings);
     List<Map<String, String>> taskConfigs = connector.taskConfigs(2);
-    assertFalse("zero task configs provided", taskConfigs.isEmpty());
+    assertFalse(taskConfigs.isEmpty(), "zero task configs provided");
     for (Map<String, String> taskConfig : taskConfigs) {
       assertEquals(settings, taskConfig);
     }

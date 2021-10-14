@@ -17,11 +17,12 @@ package com.dmathieu.kafka.opensearch;
 import java.io.IOException;
 import org.apache.kafka.common.utils.MockTime;
 import org.apache.kafka.connect.errors.ConnectException;
-import org.junit.Before;
-import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -31,7 +32,7 @@ public class RetryUtilTest {
 
   private int timesThrown;
 
-  @Before
+  @BeforeEach
   public void setup() {
     timesThrown = 0;
   }
@@ -84,12 +85,14 @@ public class RetryUtilTest {
     verify(mockClock, times(2)).sleep(anyLong());
   }
 
-  @Test(expected = ConnectException.class)
+  @Test
   public void testCallWithRetriesExhaustedRetries() throws Exception {
     MockTime mockClock = new MockTime();
 
-    assertTrue(RetryUtil.callWithRetries("test", () -> testFunction(4), 3, 100, mockClock));
-    verify(mockClock, times(3)).sleep(anyLong());
+    assertThrows(ConnectException.class, () -> {
+      assertTrue(RetryUtil.callWithRetries("test", () -> testFunction(4), 3, 100, mockClock));
+      verify(mockClock, times(3)).sleep(anyLong());
+    });
   }
 
   private boolean testFunction(int timesToThrow) throws IOException {

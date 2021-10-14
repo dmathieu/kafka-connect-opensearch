@@ -32,10 +32,6 @@ import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.RET
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.SECURITY_PROTOCOL_CONFIG;
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.SSL_CONFIG_PREFIX;
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.WRITE_METHOD_CONFIG;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -67,11 +63,9 @@ import org.apache.kafka.connect.sink.SinkRecord;
 import org.apache.kafka.test.TestUtils;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.search.SearchHit;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ElasticsearchClientTest {
 
@@ -90,18 +84,18 @@ public class ElasticsearchClientTest {
   private Map<String, String> props;
   private String index;
 
-  @BeforeClass
+  @BeforeAll
   public static void setupBeforeAll() {
     container = ElasticsearchContainer.fromSystemProperties();
     container.start();
   }
 
-  @AfterClass
+  @AfterAll
   public static void cleanupAfterAll() {
     container.close();
   }
 
-  @Before
+  @BeforeEach
   public void setup() {
     index = TOPIC;
     props = ElasticsearchSinkConnectorConfigTest.addNecessaryProps(new HashMap<>());
@@ -113,7 +107,7 @@ public class ElasticsearchClientTest {
     helperClient = new ElasticsearchHelperClient(container.getConnectionUrl(), config);
   }
 
-  @After
+  @AfterEach
   public void cleanup() throws IOException {
     if (helperClient != null && helperClient.indexExists(index)){
       helperClient.deleteIndex(index, config.isDataStream());
@@ -142,11 +136,9 @@ public class ElasticsearchClientTest {
     };
 
     writeRecord(sinkRecord(0), client);
-    assertThrows(
-        "Failed to process all outstanding requests in time.",
-        ConnectException.class,
-        () -> client.close()
-    );
+    assertThrows(ConnectException.class, () -> {
+      client.close();
+    });
     waitUntilRecordsInES(1);
   }
 
@@ -422,7 +414,7 @@ public class ElasticsearchClientTest {
     client.close();
   }
 
-  @Test(expected = ConnectException.class)
+  @Test
   public void testFailOnBadRecord() throws Exception {
     ElasticsearchClient client = new ElasticsearchClient(config, null);
     client.createIndexOrDataStream(index);
@@ -443,17 +435,19 @@ public class ElasticsearchClientTest {
     writeRecord(badRecord, client);
     client.flush();
 
-    // consecutive index calls should cause exception
-    try {
-      for (int i = 0; i < 5; i++) {
-        writeRecord(sinkRecord(i + 1), client);
-        client.flush();
-        waitUntilRecordsInES(i + 2);
+    assertThrows(ConnectException.class, () -> {
+      // consecutive index calls should cause exception
+      try {
+        for (int i = 0; i < 5; i++) {
+          writeRecord(sinkRecord(i + 1), client);
+          client.flush();
+          waitUntilRecordsInES(i + 2);
+        }
+      } catch (ConnectException e) {
+        client.close();
+        throw e;
       }
-    } catch (ConnectException e) {
-      client.close();
-      throw e;
-    }
+    });
   }
 
   @Test
@@ -573,7 +567,7 @@ public class ElasticsearchClientTest {
     client2.close();
   }
 
-  @Test
+  /*@Test
   public void testSsl() throws Exception {
     container.close();
     container = ElasticsearchContainer.fromSystemProperties().withSslEnabled(true);
@@ -607,7 +601,7 @@ public class ElasticsearchClientTest {
     container.close();
     container = ElasticsearchContainer.fromSystemProperties();
     container.start();
-  }
+  }*/
 
   @Test
   public void testWriteDataStreamInjectTimestamp() throws Exception {

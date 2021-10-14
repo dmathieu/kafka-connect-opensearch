@@ -24,9 +24,6 @@ import org.elasticsearch.client.security.user.privileges.IndicesPrivileges;
 import org.elasticsearch.client.security.user.privileges.Role;
 import org.elasticsearch.client.security.user.privileges.Role.Builder;
 import org.elasticsearch.search.SearchHit;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,9 +51,9 @@ import static org.apache.kafka.connect.runtime.ConnectorConfig.KEY_CONVERTER_CLA
 import static org.apache.kafka.connect.runtime.ConnectorConfig.TASKS_MAX_CONFIG;
 import static org.apache.kafka.connect.runtime.ConnectorConfig.VALUE_CONVERTER_CLASS_CONFIG;
 import static org.apache.kafka.connect.runtime.SinkConnectorConfig.TOPICS_CONFIG;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ElasticsearchConnectorBaseIT extends BaseConnectorIT {
 
@@ -82,12 +79,12 @@ public class ElasticsearchConnectorBaseIT extends BaseConnectorIT {
   protected Map<String, String> props;
   protected String index;
 
-  @AfterClass
+  @AfterAll
   public static void cleanupAfterAll() {
     container.close();
   }
 
-  @Before
+  @BeforeEach
   public void setup() {
     index = TOPIC;
     isDataStream = false;
@@ -99,7 +96,7 @@ public class ElasticsearchConnectorBaseIT extends BaseConnectorIT {
     helperClient = container.getHelperClient(props);
   }
 
-  @After
+  @AfterEach
   public void cleanup() throws IOException {
     stopConnect();
 

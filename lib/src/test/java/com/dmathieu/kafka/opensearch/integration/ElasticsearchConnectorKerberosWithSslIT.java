@@ -8,14 +8,13 @@ import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.SecurityPr
 import com.dmathieu.kafka.opensearch.helper.ElasticsearchContainer;
 import org.apache.kafka.common.config.SslConfigs;
 import io.confluent.common.utils.IntegrationTest;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
-@Category(IntegrationTest.class)
+import org.junit.jupiter.api.*;
+
+@Tag("Integration")
 public class ElasticsearchConnectorKerberosWithSslIT extends ElasticsearchConnectorKerberosIT{
 
-  @BeforeClass
+  @BeforeAll
   public static void setupBeforeAll() throws Exception {
     initKdc();
 

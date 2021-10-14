@@ -23,11 +23,11 @@ import org.apache.kafka.connect.runtime.rest.entities.ConnectorStateInfo;
 import org.apache.kafka.connect.util.clusters.EmbeddedConnectCluster;
 import org.apache.kafka.test.IntegrationTest;
 import org.apache.kafka.test.TestUtils;
-import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Category(IntegrationTest.class)
+import org.junit.jupiter.api.*;
+
 public abstract class BaseConnectorIT {
 
   private static final Logger log = LoggerFactory.getLogger(BaseConnectorIT.class);

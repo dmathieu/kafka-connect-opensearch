@@ -14,12 +14,10 @@ import java.util.Properties;
 import org.apache.hadoop.minikdc.MiniKdc;
 import org.apache.kafka.connect.errors.ConnectException;
 import io.confluent.common.utils.IntegrationTest;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
-@Category(IntegrationTest.class)
+import org.junit.jupiter.api.*;
+
+@Tag("Integration")
 public class ElasticsearchConnectorKerberosIT extends ElasticsearchConnectorBaseIT {
 
   private static File baseDir;
@@ -29,7 +27,7 @@ public class ElasticsearchConnectorKerberosIT extends ElasticsearchConnectorBase
   private static String userPrincipal;
   private static String userKeytab;
 
-  @BeforeClass
+  @BeforeAll
   public static void setupBeforeAll() throws Exception {
     initKdc();
 
@@ -40,7 +38,7 @@ public class ElasticsearchConnectorKerberosIT extends ElasticsearchConnectorBase
   /**
    * Shuts down the KDC and cleans up files.
    */
-  @AfterClass
+  @AfterAll
   public static void cleanupAfterAll() {
     container.close();
     closeKdc();
@@ -48,6 +46,7 @@ public class ElasticsearchConnectorKerberosIT extends ElasticsearchConnectorBase
 
   @Test
   public void testKerberos() throws Exception {
+
     addKerberosConfigs(props);
     helperClient = container.getHelperClient(props);
     runSimpleTest(props);

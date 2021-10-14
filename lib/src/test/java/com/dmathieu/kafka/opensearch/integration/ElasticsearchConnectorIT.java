@@ -26,7 +26,6 @@ import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.WRI
 import static org.apache.kafka.connect.runtime.ConnectorConfig.VALUE_CONVERTER_CLASS_CONFIG;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.assertEquals;
 
 import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig;
 import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BehaviorOnNullValues;
@@ -41,20 +40,20 @@ import io.confluent.common.utils.IntegrationTest;
 import org.elasticsearch.client.security.user.User;
 import org.elasticsearch.client.security.user.privileges.Role;
 import org.elasticsearch.search.SearchHit;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
-@Category(IntegrationTest.class)
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+@Tag("Integration")
 public class ElasticsearchConnectorIT extends ElasticsearchConnectorBaseIT {
 
   // TODO: test compatibility
 
-  @BeforeClass
+  @BeforeAll
   public static void setupBeforeAll() {
     Map<User, String> users = getUsers();
     List<Role> roles = getRoles();
@@ -62,7 +61,7 @@ public class ElasticsearchConnectorIT extends ElasticsearchConnectorBaseIT {
     container.start();
   }
 
-  @Override
+  @Override @BeforeEach
   public void setup() {
     if (!container.isRunning()) {
       setupBeforeAll();

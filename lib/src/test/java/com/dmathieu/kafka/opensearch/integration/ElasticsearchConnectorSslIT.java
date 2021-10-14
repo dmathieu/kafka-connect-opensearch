@@ -21,9 +21,6 @@ import com.dmathieu.kafka.opensearch.helper.ElasticsearchContainer;
 import org.apache.kafka.common.config.SslConfigs;
 import org.elasticsearch.client.security.user.User;
 import org.elasticsearch.client.security.user.privileges.Role;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,13 +32,14 @@ import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CON
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_USERNAME_CONFIG;
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.SSL_CONFIG_PREFIX;
 
+import org.junit.jupiter.api.*;
 
-@Category(IntegrationTest.class)
+@Tag("Integration")
 public class ElasticsearchConnectorSslIT extends ElasticsearchConnectorBaseIT {
 
   private static final Logger log = LoggerFactory.getLogger(ElasticsearchConnectorSslIT.class);
 
-  @BeforeClass
+  @BeforeAll
   public static void setupBeforeAll() {
     Map<User, String> users = getUsers();
     List<Role> roles = getRoles();

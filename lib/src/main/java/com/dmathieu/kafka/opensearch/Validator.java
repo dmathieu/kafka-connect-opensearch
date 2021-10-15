@@ -70,8 +70,7 @@ public class Validator {
 
   private static final Logger log = LoggerFactory.getLogger(Validator.class);
 
-  private static final String CONNECTOR_V11_COMPATIBLE_ES_VERSION = "7.0.0";
-  private static final String DATA_STREAM_COMPATIBLE_ES_VERSION = "7.9.0";
+  private static final String CONNECTOR_V11_COMPATIBLE_OS_VERSION = "1.0.0";
 
   private ElasticsearchSinkConnectorConfig config;
   private Map<String, ConfigValue> values;
@@ -338,26 +337,14 @@ public class Validator {
       // ElasticsearchStatusException.
       return;
     }
-    String esVersionNumber = response.getVersion().getNumber();
-    if (config.isDataStream()
-        && compareVersions(esVersionNumber, DATA_STREAM_COMPATIBLE_ES_VERSION) < 0) {
+    String osVersionNumber = response.getVersion().getNumber();
+    if (compareVersions(osVersionNumber, CONNECTOR_V11_COMPATIBLE_OS_VERSION) < 0) {
       String errorMessage = String.format(
-          "Elasticsearch version %s is not compatible with data streams. Elasticsearch"
-              + "version must be at least %s.",
-          esVersionNumber,
-          DATA_STREAM_COMPATIBLE_ES_VERSION
-      );
-      addErrorMessage(CONNECTION_URL_CONFIG, errorMessage);
-      addErrorMessage(DATA_STREAM_TYPE_CONFIG, errorMessage);
-      addErrorMessage(DATA_STREAM_DATASET_CONFIG, errorMessage);
-    }
-    if (compareVersions(esVersionNumber, CONNECTOR_V11_COMPATIBLE_ES_VERSION) < 0) {
-      String errorMessage = String.format(
-          "Connector version %s is not compatible with Elasticsearch version %s. Elasticsearch "
+          "Connector version %s is not compatible with OpenSearch version %s. OpenSearch "
               + "version must be at least %s.",
           Version.getVersion(),
-          esVersionNumber,
-          CONNECTOR_V11_COMPATIBLE_ES_VERSION
+          osVersionNumber,
+          CONNECTOR_V11_COMPATIBLE_OS_VERSION
       );
       addErrorMessage(CONNECTION_URL_CONFIG, errorMessage);
     }

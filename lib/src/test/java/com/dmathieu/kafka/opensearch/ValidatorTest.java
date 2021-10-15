@@ -81,7 +81,7 @@ public class ValidatorTest {
     when(mockClient.ping(any(RequestOptions.class))).thenReturn(true);
     mockInfoResponse = mock(MainResponse.class, Mockito.RETURNS_DEEP_STUBS);
     when(mockClient.info(any(RequestOptions.class))).thenReturn(mockInfoResponse);
-    when(mockInfoResponse.getVersion().getNumber()).thenReturn("7.9.3");
+    when(mockInfoResponse.getVersion().getNumber()).thenReturn("1.1.0");
   }
 
   @Test
@@ -375,16 +375,16 @@ public class ValidatorTest {
   @Test
   public void testIncompatibleESVersionWithConnector() {
     validator = new Validator(props, () -> mockClient);
-    when(mockInfoResponse.getVersion().getNumber()).thenReturn("6.0.0");
+    when(mockInfoResponse.getVersion().getNumber()).thenReturn("0.0.5");
     Config result = validator.validate();
-    assertHasErrorMessage(result, CONNECTION_URL_CONFIG, "not compatible with Elasticsearch");
+    assertHasErrorMessage(result, CONNECTION_URL_CONFIG, "not compatible with OpenSearch");
   }
 
   @Test
   public void testCompatibleESVersionWithConnector() {
     validator = new Validator(props, () -> mockClient);
-    String[] compatibleESVersions = {"7.0.0", "7.9.3", "7.10.0", "7.12.1", "8.0.0", "10.10.10"};
-    for (String version : compatibleESVersions) {
+    String[] compatibleOSVersions = {"1.0.0", "1.0.1", "1.1.0", "1.1.2"};
+    for (String version : compatibleOSVersions) {
       when(mockInfoResponse.getVersion().getNumber()).thenReturn(version);
       Config result = validator.validate();
 
@@ -460,56 +460,6 @@ public class ValidatorTest {
     assertHasErrorMessage(result, DATA_STREAM_TIMESTAMP_CONFIG, "only necessary for data streams");
   }
 
-  @Test
-  public void testIncompatibleVersionDataStreamSet() {
-    configureDataStream();
-    validator = new Validator(props, () -> mockClient);
-    when(mockInfoResponse.getVersion().getNumber()).thenReturn("7.8.1");
-
-    Config result = validator.validate();
-    assertHasErrorMessage(result, CONNECTION_URL_CONFIG, "not compatible with data streams");
-    assertHasErrorMessage(result, DATA_STREAM_TYPE_CONFIG, "not compatible with data streams");
-    assertHasErrorMessage(result, DATA_STREAM_DATASET_CONFIG, "not compatible with data streams");
-  }
-
-  @Test
-  public void testIncompatibleVersionDataStreamNotSet() {
-    validator = new Validator(props, () -> mockClient);
-    String[] incompatibleESVersions = {"7.8.0", "7.7.1", "7.6.2", "7.2.0", "7.1.1", "7.0.0-rc2"};
-    for (String version : incompatibleESVersions) {
-      when(mockInfoResponse.getVersion().getNumber()).thenReturn(version);
-      Config result = validator.validate();
-
-      assertNoErrors(result);
-    }
-  }
-
-  @Test
-  public void testCompatibleVersionDataStreamNotSet() {
-    validator = new Validator(props, () -> mockClient);
-    String[] compatibleESVersions = {"7.9.0", "7.9.3", "7.9.3-amd64", "7.10.0", "7.10.2", "7.11.0", "7.11.2", "7.12.0", "7.12.1",
-        "8.0.0", "10.10.10", "10.1.10", "10.1.1", "8.10.10"};
-    for (String version : compatibleESVersions) {
-      when(mockInfoResponse.getVersion().getNumber()).thenReturn(version);
-      Config result = validator.validate();
-
-      assertNoErrors(result);
-    }
-  }
-
-  @Test
-  public void testCompatibleVersionDataStreamSet() {
-    configureDataStream();
-    validator = new Validator(props, () -> mockClient);
-    String[] compatibleESVersions = {"7.9.0", "7.9.3", "7.9.3-amd64", "7.10.0", "7.10.2", "7.11.0", "7.11.2", "7.12.0", "7.12.1",
-        "8.0.0", "10.10.10", "10.1.10", "10.1.1", "8.10.10"};
-    for (String version : compatibleESVersions) {
-      when(mockInfoResponse.getVersion().getNumber()).thenReturn(version);
-      Config result = validator.validate();
-
-      assertNoErrors(result);
-    }
-  }
 
   private static void assertHasErrorMessage(Config config, String property, String msg) {
     for (ConfigValue configValue : config.configValues()) {

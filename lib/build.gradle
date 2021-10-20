@@ -22,7 +22,7 @@ repositories {
 
 ext {
     kafkaVersion = "3.0.0"
-    esVersion = "7.9.3"
+    esVersion = "7.15.1"
 }
 
 dependencies {

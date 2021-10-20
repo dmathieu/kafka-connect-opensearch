@@ -21,7 +21,7 @@ repositories {
 }
 
 ext {
-    kafkaVersion = "3.0.0"
+    kafkaVersion = "6.2.1-ce"
     esVersion = "7.9.3"
 }
 

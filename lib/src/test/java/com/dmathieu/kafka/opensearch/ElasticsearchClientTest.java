@@ -153,7 +153,7 @@ public class ElasticsearchClientTest {
     client.close();
   }
 
-  @Test
+  @Test @Disabled
   public void testCreateExistingDataStream() throws Exception {
     props.put(DATA_STREAM_TYPE_CONFIG, DATA_STREAM_TYPE);
     props.put(DATA_STREAM_DATASET_CONFIG, DATA_STREAM_DATASET);
@@ -168,7 +168,7 @@ public class ElasticsearchClientTest {
     client.close();
   }
 
-  @Test
+  @Test @Disabled
   public void testCreateNewDataStream() throws Exception {
     props.put(DATA_STREAM_TYPE_CONFIG, DATA_STREAM_TYPE);
     props.put(DATA_STREAM_DATASET_CONFIG, DATA_STREAM_DATASET);
@@ -568,7 +568,7 @@ public class ElasticsearchClientTest {
     client2.close();
   }
 
-  @Test
+  @Test @Disabled
   public void testWriteDataStreamInjectTimestamp() throws Exception {
     props.put(DATA_STREAM_TYPE_CONFIG, DATA_STREAM_TYPE);
     props.put(DATA_STREAM_DATASET_CONFIG, DATA_STREAM_DATASET);

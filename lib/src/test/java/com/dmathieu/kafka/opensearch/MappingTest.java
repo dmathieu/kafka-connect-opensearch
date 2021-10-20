@@ -171,7 +171,7 @@ public class MappingTest {
       }
     }
 
-    DataConverter converter = new DataConverter(new ElasticsearchSinkConnectorConfig(ElasticsearchSinkConnectorConfigTest.addNecessaryProps(new HashMap<>())));
+    DataConverter converter = new DataConverter(new OpenSearchSinkConnectorConfig(OpenSearchSinkConnectorConfigTest.addNecessaryProps(new HashMap<>())));
     Schema.Type schemaType = schema.type();
     switch (schemaType) {
       case ARRAY:
@@ -190,7 +190,7 @@ public class MappingTest {
         }
         break;
       default:
-        assertEquals("\"" + Mapping.getElasticsearchType(schemaType) + "\"", type.toString());
+        assertEquals("\"" + Mapping.getOpenSearchType(schemaType) + "\"", type.toString());
     }
   }
 }

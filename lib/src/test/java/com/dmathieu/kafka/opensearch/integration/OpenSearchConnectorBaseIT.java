@@ -33,19 +33,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnector;
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnector;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig;
 import com.dmathieu.kafka.opensearch.helper.OpenSearchContainer;
-import com.dmathieu.kafka.opensearch.helper.ElasticsearchHelperClient;
+import com.dmathieu.kafka.opensearch.helper.OpenSearchHelperClient;
 
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_PASSWORD_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_URL_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_USERNAME_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.IGNORE_KEY_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.IGNORE_SCHEMA_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.DATA_STREAM_DATASET_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.DATA_STREAM_TYPE_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.SSL_CONFIG_PREFIX;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.CONNECTION_PASSWORD_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.CONNECTION_URL_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.CONNECTION_USERNAME_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.IGNORE_KEY_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.IGNORE_SCHEMA_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.DATA_STREAM_DATASET_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.DATA_STREAM_TYPE_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.SSL_CONFIG_PREFIX;
 import static org.apache.kafka.connect.json.JsonConverterConfig.SCHEMAS_ENABLE_CONFIG;
 import static org.apache.kafka.connect.runtime.ConnectorConfig.CONNECTOR_CLASS_CONFIG;
 import static org.apache.kafka.connect.runtime.ConnectorConfig.KEY_CONVERTER_CLASS_CONFIG;
@@ -57,7 +57,7 @@ import org.apache.kafka.common.config.SslConfigs;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ElasticsearchConnectorBaseIT extends BaseConnectorIT {
+public class OpenSearchConnectorBaseIT extends BaseConnectorIT {
 
   protected static final int NUM_RECORDS = 5;
   protected static final int TASKS_MAX = 1;
@@ -67,7 +67,7 @@ public class ElasticsearchConnectorBaseIT extends BaseConnectorIT {
   protected static OpenSearchContainer container;
 
   protected boolean isDataStream;
-  protected ElasticsearchHelperClient helperClient;
+  protected OpenSearchHelperClient helperClient;
   protected Map<String, String> props;
   protected String index;
 
@@ -108,7 +108,7 @@ public class ElasticsearchConnectorBaseIT extends BaseConnectorIT {
     Map<String, String> props = new HashMap<>();
 
     // generic configs
-    props.put(CONNECTOR_CLASS_CONFIG, ElasticsearchSinkConnector.class.getName());
+    props.put(CONNECTOR_CLASS_CONFIG, OpenSearchSinkConnector.class.getName());
     props.put(TOPICS_CONFIG, TOPIC);
     props.put(TASKS_MAX_CONFIG, Integer.toString(TASKS_MAX));
     props.put(KEY_CONVERTER_CLASS_CONFIG, StringConverter.class.getName());
@@ -149,9 +149,9 @@ public class ElasticsearchConnectorBaseIT extends BaseConnectorIT {
   protected void setupFromContainer() {
     String address = container.getConnectionUrl();
     props.put(CONNECTION_URL_CONFIG, address);
-    helperClient = new ElasticsearchHelperClient(
+    helperClient = new OpenSearchHelperClient(
         props.get(CONNECTION_URL_CONFIG),
-        new ElasticsearchSinkConnectorConfig(props)
+        new OpenSearchSinkConnectorConfig(props)
     );
   }
 

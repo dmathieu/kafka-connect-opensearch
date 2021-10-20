@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.stubbing.Scenario;
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnector;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnector;
 import org.apache.kafka.connect.json.JsonConverter;
 import org.apache.kafka.connect.storage.StringConverter;
 
@@ -32,17 +32,17 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BATCH_SIZE_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_URL_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.FLUSH_TIMEOUT_MS_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.IGNORE_KEY_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.IGNORE_SCHEMA_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.LINGER_MS_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.MAX_BUFFERED_RECORDS_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.MAX_IN_FLIGHT_REQUESTS_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.MAX_RETRIES_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.READ_TIMEOUT_MS_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.RETRY_BACKOFF_MS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.BATCH_SIZE_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.CONNECTION_URL_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.FLUSH_TIMEOUT_MS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.IGNORE_KEY_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.IGNORE_SCHEMA_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.LINGER_MS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.MAX_BUFFERED_RECORDS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.MAX_IN_FLIGHT_REQUESTS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.MAX_RETRIES_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.READ_TIMEOUT_MS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.RETRY_BACKOFF_MS_CONFIG;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.kafka.connect.json.JsonConverterConfig.SCHEMAS_ENABLE_CONFIG;
 import static org.apache.kafka.connect.runtime.ConnectorConfig.CONNECTOR_CLASS_CONFIG;
@@ -56,7 +56,7 @@ import static org.awaitility.Awaitility.await;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ElasticsearchConnectorNetworkIT extends BaseConnectorIT {
+public class OpenSearchConnectorNetworkIT extends BaseConnectorIT {
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -343,7 +343,7 @@ public class ElasticsearchConnectorNetworkIT extends BaseConnectorIT {
     Map<String, String> props = new HashMap<>();
 
     // generic configs
-    props.put(CONNECTOR_CLASS_CONFIG, ElasticsearchSinkConnector.class.getName());
+    props.put(CONNECTOR_CLASS_CONFIG, OpenSearchSinkConnector.class.getName());
     props.put(TOPICS_CONFIG, TOPIC);
     props.put(TASKS_MAX_CONFIG, Integer.toString(TASKS_MAX));
     props.put(KEY_CONVERTER_CLASS_CONFIG, StringConverter.class.getName());

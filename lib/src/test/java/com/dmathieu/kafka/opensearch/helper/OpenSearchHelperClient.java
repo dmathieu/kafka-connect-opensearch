@@ -47,15 +47,15 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import com.dmathieu.kafka.opensearch.ConfigCallbackHandler;
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig;
 
-public class ElasticsearchHelperClient {
+public class OpenSearchHelperClient {
 
-  private static final Logger log = LoggerFactory.getLogger(ElasticsearchHelperClient.class);
+  private static final Logger log = LoggerFactory.getLogger(OpenSearchHelperClient.class);
 
   private RestHighLevelClient client;
 
-  public ElasticsearchHelperClient(String url, ElasticsearchSinkConnectorConfig config) {
+  public OpenSearchHelperClient(String url, OpenSearchSinkConnectorConfig config) {
     ConfigCallbackHandler configCallbackHandler = new ConfigCallbackHandler(config);
     this.client = new RestHighLevelClient(
         RestClient

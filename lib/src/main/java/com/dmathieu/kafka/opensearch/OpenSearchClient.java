@@ -61,14 +61,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BehaviorOnMalformedDoc;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.BehaviorOnMalformedDoc;
 
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.FLUSH_TIMEOUT_MS_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.MAX_BUFFERED_RECORDS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.FLUSH_TIMEOUT_MS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.MAX_BUFFERED_RECORDS_CONFIG;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Based on Elasticsearch's BulkProcessor, which is responsible for building batches based on size
+ * Based on OpenSearch's BulkProcessor, which is responsible for building batches based on size
  * and linger time (not grouped by partitions) and limiting the concurrency (max number of
  * in-flight requests).
  *
@@ -80,9 +80,8 @@ import static java.util.stream.Collectors.toList;
  * in failure of the task.
  */
 @SuppressWarnings("checkstyle:ClassDataAbstractionCoupling")
-public class ElasticsearchClient {
-
-  private static final Logger log = LoggerFactory.getLogger(ElasticsearchClient.class);
+public class OpenSearchClient {
+  private static final Logger log = LoggerFactory.getLogger(OpenSearchClient.class);
 
   private static final long WAIT_TIME_MS = 10;
   private static final long CLOSE_WAIT_TIME_MS = 5_000;
@@ -103,22 +102,22 @@ public class ElasticsearchClient {
   protected final BulkProcessor bulkProcessor;
   private final ConcurrentMap<DocWriteRequest<?>, SinkRecordAndOffset> requestToSinkRecord;
   private final ConcurrentMap<Long, List<SinkRecordAndOffset>> inFlightRequests;
-  private final ElasticsearchSinkConnectorConfig config;
+  private final OpenSearchSinkConnectorConfig config;
   private final ErrantRecordReporter reporter;
   private final RestHighLevelClient client;
   private final ExecutorService bulkExecutorService;
   private final Time clock;
 
   // Visible for testing
-  public ElasticsearchClient(
-          ElasticsearchSinkConnectorConfig config,
+  public OpenSearchClient(
+          OpenSearchSinkConnectorConfig config,
           ErrantRecordReporter reporter
   ) {
     this(config, reporter, new OffsetTracker());
   }
 
-  public ElasticsearchClient(
-      ElasticsearchSinkConnectorConfig config,
+  public OpenSearchClient(
+      OpenSearchSinkConnectorConfig config,
       ErrantRecordReporter reporter,
       OffsetTracker offsetTracker
   ) {
@@ -182,7 +181,7 @@ public class ElasticsearchClient {
   }
 
   /**
-   * Returns the underlying Elasticsearch client.
+   * Returns the underlying OpenSearch client.
    *
    * @return the underlying RestHighLevelClient
    */
@@ -191,7 +190,7 @@ public class ElasticsearchClient {
   }
 
   /**
-   * Closes the ElasticsearchClient.
+   * Closes the OpenSearchClient.
    *
    * @throws ConnectException if all the records fail to flush before the timeout.
    */
@@ -199,13 +198,13 @@ public class ElasticsearchClient {
     try {
       if (!bulkProcessor.awaitClose(config.flushTimeoutMs(), TimeUnit.MILLISECONDS)) {
         throw new ConnectException(
-            "Failed to process outstanding requests in time while closing the ElasticsearchClient."
+            "Failed to process outstanding requests in time while closing the OpenSearchClient."
         );
       }
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       throw new ConnectException(
-          "Interrupted while processing all in-flight requests on ElasticsearchClient close.", e
+          "Interrupted while processing all in-flight requests on OpenSearchClient close.", e
       );
     } finally {
       closeResources();
@@ -261,7 +260,7 @@ public class ElasticsearchClient {
   /**
    * Buffers a record to index. Will ensure that there are no concurrent requests for the same
    * document id when either the DLQ is configured or
-   * {@link ElasticsearchSinkConnectorConfig#IGNORE_KEY_CONFIG} is set to <code>false</code> because
+   * {@link OpenSearchSinkConnectorConfig#IGNORE_KEY_CONFIG} is set to <code>false</code> because
    * they require the use of a map keyed by document id.
    *
    * <p>This call is usually asynchronous, but can block in any of the following scenarios:
@@ -292,7 +291,7 @@ public class ElasticsearchClient {
         close();
       } catch (ConnectException e) {
         // if close fails, want to still throw the original exception
-        log.warn("Couldn't close elasticsearch client", e);
+        log.warn("Couldn't close opensearch client", e);
       }
       throw error.get();
     }
@@ -429,7 +428,7 @@ public class ElasticsearchClient {
     try {
       client.close();
     } catch (IOException e) {
-      log.warn("Failed to close Elasticsearch client.", e);
+      log.warn("Failed to close OpenSearch client.", e);
     }
   }
 
@@ -550,7 +549,7 @@ public class ElasticsearchClient {
             "Encountered an illegal document error '{}'. To ignore future records like this,"
                 + " change the configuration '{}' to '{}'.",
             response.getFailureMessage(),
-            ElasticsearchSinkConnectorConfig.BEHAVIOR_ON_MALFORMED_DOCS_CONFIG,
+            OpenSearchSinkConnectorConfig.BEHAVIOR_ON_MALFORMED_DOCS_CONFIG,
             BehaviorOnMalformedDoc.IGNORE
         );
         error.compareAndSet(
@@ -620,7 +619,7 @@ public class ElasticsearchClient {
   }
 
   /**
-   * Exception that swallows the stack trace used for reporting errors from Elasticsearch
+   * Exception that swallows the stack trace used for reporting errors from OpenSearch
    * (mapper_parser_exception, illegal_argument_exception, and action_request_validation_exception)
    * resulting from bad records using the AK 2.6 reporter DLQ interface.
    */

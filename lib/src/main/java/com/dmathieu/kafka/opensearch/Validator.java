@@ -35,36 +35,36 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.SecurityProtocol;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.SecurityProtocol;
 
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BATCH_SIZE_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BEHAVIOR_ON_NULL_VALUES_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BehaviorOnNullValues;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_PASSWORD_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_URL_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_USERNAME_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.DATA_STREAM_DATASET_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.DATA_STREAM_TIMESTAMP_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.DATA_STREAM_TYPE_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.DataStreamType;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.FLUSH_TIMEOUT_MS_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.IGNORE_KEY_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.IGNORE_KEY_TOPICS_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.IGNORE_SCHEMA_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.IGNORE_SCHEMA_TOPICS_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.KERBEROS_KEYTAB_PATH_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.KERBEROS_PRINCIPAL_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.LINGER_MS_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.MAX_BUFFERED_RECORDS_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.MAX_IN_FLIGHT_REQUESTS_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.PROXY_HOST_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.PROXY_PASSWORD_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.PROXY_PORT_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.PROXY_USERNAME_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.SECURITY_PROTOCOL_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.SSL_CONFIG_PREFIX;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.WRITE_METHOD_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.WriteMethod;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.BATCH_SIZE_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.BEHAVIOR_ON_NULL_VALUES_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.BehaviorOnNullValues;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.CONNECTION_PASSWORD_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.CONNECTION_URL_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.CONNECTION_USERNAME_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.DATA_STREAM_DATASET_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.DATA_STREAM_TIMESTAMP_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.DATA_STREAM_TYPE_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.DataStreamType;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.FLUSH_TIMEOUT_MS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.IGNORE_KEY_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.IGNORE_KEY_TOPICS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.IGNORE_SCHEMA_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.IGNORE_SCHEMA_TOPICS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.KERBEROS_KEYTAB_PATH_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.KERBEROS_PRINCIPAL_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.LINGER_MS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.MAX_BUFFERED_RECORDS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.MAX_IN_FLIGHT_REQUESTS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.PROXY_HOST_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.PROXY_PASSWORD_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.PROXY_PORT_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.PROXY_USERNAME_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.SECURITY_PROTOCOL_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.SSL_CONFIG_PREFIX;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.WRITE_METHOD_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.WriteMethod;
 
 public class Validator {
 
@@ -72,7 +72,7 @@ public class Validator {
 
   private static final String CONNECTOR_V11_COMPATIBLE_OS_VERSION = "1.0.0";
 
-  private ElasticsearchSinkConnectorConfig config;
+  private OpenSearchSinkConnectorConfig config;
   private Map<String, ConfigValue> values;
   private List<ConfigValue> validations;
   private ClientFactory clientFactory;
@@ -84,13 +84,13 @@ public class Validator {
   // Exposed for testing
   protected Validator(Map<String, String> props, ClientFactory clientFactory) {
     try {
-      this.config = new ElasticsearchSinkConnectorConfig(props);
+      this.config = new OpenSearchSinkConnectorConfig(props);
     } catch (ConfigException e) {
       // some configs are invalid
     }
 
     this.clientFactory = clientFactory == null ? this::createClient : clientFactory;
-    validations = ElasticsearchSinkConnectorConfig.CONFIG.validate(props);
+    validations = OpenSearchSinkConnectorConfig.CONFIG.validate(props);
     values = validations.stream().collect(Collectors.toMap(ConfigValue::name, Function.identity()));
   }
 
@@ -368,7 +368,7 @@ public class Validator {
     }
     if (!successful) {
       String errorMessage = String.format(
-          "Could not connect to Elasticsearch. %s",
+          "Could not connect to OpenSearch. %s",
           exceptionMessage
       );
       addErrorMessage(CONNECTION_URL_CONFIG, errorMessage);
@@ -386,7 +386,7 @@ public class Validator {
 
       if (config.isKerberosEnabled()) {
         errorMessage = String.format(
-            "Could not connect to Elasticsearch. Check your Kerberos settings. %s",
+            "Could not connect to OpenSearch. Check your Kerberos settings. %s",
             exceptionMessage
         );
 
@@ -396,7 +396,7 @@ public class Validator {
 
       if (config.isBasicProxyConfigured()) {
         errorMessage = String.format(
-            "Could not connect to Elasticsearch. Check your proxy settings. %s",
+            "Could not connect to OpenSearch. Check your proxy settings. %s",
             exceptionMessage
         );
         addErrorMessage(PROXY_HOST_CONFIG, errorMessage);

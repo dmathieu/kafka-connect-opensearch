@@ -75,9 +75,9 @@ public class ConfigCallbackHandler implements HttpClientConfigCallback {
 
   private static final Oid SPNEGO_OID = spnegoOid();
 
-  private final ElasticsearchSinkConnectorConfig config;
+  private final OpenSearchSinkConnectorConfig config;
 
-  public ConfigCallbackHandler(ElasticsearchSinkConnectorConfig config) {
+  public ConfigCallbackHandler(OpenSearchSinkConnectorConfig config) {
     this.config = config;
   }
 
@@ -192,7 +192,7 @@ public class ConfigCallbackHandler implements HttpClientConfigCallback {
 
       return cm;
     } catch (IOReactorException e) {
-      throw new ConnectException("Unable to open ElasticsearchClient.", e);
+      throw new ConnectException("Unable to open OpenSearchClient.", e);
     }
   }
 
@@ -337,7 +337,7 @@ public class ConfigCallbackHandler implements HttpClientConfigCallback {
               new HashSet<>()
           );
           LoginContext loginContext = new LoginContext(
-              "ElasticsearchSinkConnector",
+              "OpenSearchSinkConnector",
               subject,
               null,
               conf

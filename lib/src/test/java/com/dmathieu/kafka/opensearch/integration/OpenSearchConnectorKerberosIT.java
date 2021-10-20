@@ -1,7 +1,7 @@
 package com.dmathieu.kafka.opensearch.integration;
 
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.KERBEROS_KEYTAB_PATH_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.KERBEROS_PRINCIPAL_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.KERBEROS_KEYTAB_PATH_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.KERBEROS_PRINCIPAL_CONFIG;
 
 import com.dmathieu.kafka.opensearch.helper.OpenSearchContainer;
 import java.io.File;
@@ -18,7 +18,7 @@ import io.confluent.common.utils.IntegrationTest;
 import org.junit.jupiter.api.*;
 
 @Tag("Integration") @Disabled
-public class ElasticsearchConnectorKerberosIT extends ElasticsearchConnectorBaseIT {
+public class OpenSearchConnectorKerberosIT extends OpenSearchConnectorBaseIT {
 
   private static File baseDir;
   private static MiniKdc kdc;

@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ElasticsearchSinkConnector extends SinkConnector {
+public class OpenSearchSinkConnector extends SinkConnector {
 
   private Map<String, String> configProperties;
 
@@ -41,10 +41,10 @@ public class ElasticsearchSinkConnector extends SinkConnector {
     try {
       configProperties = props;
       // validation
-      new ElasticsearchSinkConnectorConfig(props);
+      new OpenSearchSinkConnectorConfig(props);
     } catch (ConfigException e) {
       throw new ConnectException(
-          "Couldn't start ElasticsearchSinkConnector due to configuration error",
+          "Couldn't start OpenSearchSinkConnector due to configuration error",
           e
       );
     }
@@ -52,7 +52,7 @@ public class ElasticsearchSinkConnector extends SinkConnector {
 
   @Override
   public Class<? extends Task> taskClass() {
-    return ElasticsearchSinkTask.class;
+    return OpenSearchSinkTask.class;
   }
 
   @Override
@@ -71,7 +71,7 @@ public class ElasticsearchSinkConnector extends SinkConnector {
 
   @Override
   public ConfigDef config() {
-    return ElasticsearchSinkConnectorConfig.CONFIG;
+    return OpenSearchSinkConnectorConfig.CONFIG;
   }
 
   @Override

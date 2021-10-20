@@ -1,7 +1,7 @@
 package com.dmathieu.kafka.opensearch;
 
 import com.google.common.collect.ImmutableSet;
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkTask.PartitionPauser;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkTask.PartitionPauser;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.connect.sink.SinkTaskContext;
 

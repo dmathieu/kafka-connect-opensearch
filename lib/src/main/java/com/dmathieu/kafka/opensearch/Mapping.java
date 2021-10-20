@@ -30,7 +30,7 @@ import java.io.IOException;
 
 public class Mapping {
 
-  // Elasticsearch types
+  // OpenSearch types
   public static final String BOOLEAN_TYPE = "boolean";
   public static final String BYTE_TYPE = "byte";
   public static final String BINARY_TYPE = "binary";
@@ -44,7 +44,7 @@ public class Mapping {
   public static final String KEYWORD_TYPE = "keyword";
   public static final String DATE_TYPE = "date";
 
-  // Elasticsearch mapping fields
+  // OpenSearch mapping fields
   private static final String DEFAULT_VALUE_FIELD = "null_value";
   private static final String FIELDS_FIELD = "fields";
   private static final String IGNORE_ABOVE_FIELD = "ignore_above";
@@ -99,7 +99,7 @@ public class Mapping {
         return buildStruct(schema, builder);
 
       default:
-        return inferPrimitive(builder, getElasticsearchType(schemaType), schema.defaultValue());
+        return inferPrimitive(builder, getOpenSearchType(schemaType), schema.defaultValue());
     }
   }
 
@@ -223,7 +223,7 @@ public class Mapping {
   }
 
   // visible for testing
-  protected static String getElasticsearchType(Schema.Type schemaType) {
+  protected static String getOpenSearchType(Schema.Type schemaType) {
     switch (schemaType) {
       case BOOLEAN:
         return BOOLEAN_TYPE;

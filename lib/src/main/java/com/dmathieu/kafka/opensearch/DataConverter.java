@@ -19,7 +19,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BehaviorOnNullValues;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.BehaviorOnNullValues;
 import org.apache.kafka.connect.data.ConnectSchema;
 import org.apache.kafka.connect.data.Date;
 import org.apache.kafka.connect.data.Decimal;
@@ -68,7 +68,7 @@ public class DataConverter {
     JSON_CONVERTER.configure(Collections.singletonMap("schemas.enable", "false"), false);
   }
 
-  private final ElasticsearchSinkConnectorConfig config;
+  private final OpenSearchSinkConnectorConfig config;
 
   /**
    * Create a DataConverter, specifying how map entries with string keys within record
@@ -79,7 +79,7 @@ public class DataConverter {
    *
    * @param config connector config
    */
-  public DataConverter(ElasticsearchSinkConnectorConfig config) {
+  public DataConverter(OpenSearchSinkConnectorConfig config) {
     this.config = config;
     this.objectMapper = new ObjectMapper();
   }
@@ -135,7 +135,7 @@ public class DataConverter {
             return null;
           }
           // Will proceed as normal, ultimately creating a DeleteRequest
-          log.trace("Deleting {} from Elasticsearch", recordString(record));
+          log.trace("Deleting {} from OpenSearch", recordString(record));
           break;
         case FAIL:
         default:
@@ -145,7 +145,7 @@ public class DataConverter {
                       + " this change the configuration property '%s' from '%s' to '%s')",
                   recordString(record),
                   record.key(),
-                  ElasticsearchSinkConnectorConfig.BEHAVIOR_ON_NULL_VALUES_CONFIG,
+                  OpenSearchSinkConnectorConfig.BEHAVIOR_ON_NULL_VALUES_CONFIG,
                   BehaviorOnNullValues.FAIL,
                   BehaviorOnNullValues.IGNORE
               )
@@ -234,9 +234,9 @@ public class DataConverter {
     return request;
   }
 
-  // We need to pre process the Kafka Connect schema before converting to JSON as Elasticsearch
+  // We need to pre process the Kafka Connect schema before converting to JSON as OpenSearch
   // expects a different JSON format from the current JSON converter provides. Rather than
-  // completely rewrite a converter for Elasticsearch, we will refactor the JSON converter to
+  // completely rewrite a converter for OpenSearch, we will refactor the JSON converter to
   // support customized translation. The pre process is no longer needed once we have the JSON
   // converter refactored.
   // visible for testing

@@ -38,11 +38,11 @@ import static org.apache.kafka.common.config.ConfigDef.Range.between;
 import static org.apache.kafka.common.config.SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG;
 import static org.apache.kafka.common.config.SslConfigs.addClientSslSupport;
 
-public class ElasticsearchSinkConnectorConfig extends AbstractConfig {
+public class OpenSearchSinkConnectorConfig extends AbstractConfig {
   // Connector group
   public static final String CONNECTION_URL_CONFIG = "connection.url";
   private static final String CONNECTION_URL_DOC =
-      "The comma-separated list of one or more Elasticsearch URLs, such as ``http://eshost1:9200,"
+      "The comma-separated list of one or more OpenSearch URLs, such as ``http://eshost1:9200,"
       + "http://eshost2:9200`` or ``https://eshost3:9200``. HTTPS is used for all connections "
       + "if any of the URLs starts with ``https:``. A URL without a protocol is treated as "
       + "``http``.";
@@ -50,7 +50,7 @@ public class ElasticsearchSinkConnectorConfig extends AbstractConfig {
 
   public static final String CONNECTION_USERNAME_CONFIG = "connection.username";
   private static final String CONNECTION_USERNAME_DOC =
-      "The username used to authenticate with Elasticsearch. "
+      "The username used to authenticate with OpenSearch. "
       + "The default is the null, and authentication will only be performed if "
       + " both the username and password are non-null.";
   private static final String CONNECTION_USERNAME_DISPLAY = "Connection Username";
@@ -58,7 +58,7 @@ public class ElasticsearchSinkConnectorConfig extends AbstractConfig {
 
   public static final String CONNECTION_PASSWORD_CONFIG = "connection.password";
   private static final String CONNECTION_PASSWORD_DOC =
-      "The password used to authenticate with Elasticsearch. "
+      "The password used to authenticate with OpenSearch. "
       + "The default is the null, and authentication will only be performed if "
       + " both the username and password are non-null.";
   private static final String CONNECTION_PASSWORD_DISPLAY = "Connection Password";
@@ -66,14 +66,14 @@ public class ElasticsearchSinkConnectorConfig extends AbstractConfig {
 
   public static final String BATCH_SIZE_CONFIG = "batch.size";
   private static final String BATCH_SIZE_DOC =
-      "The number of records to process as a batch when writing to Elasticsearch.";
+      "The number of records to process as a batch when writing to OpenSearch.";
   private static final String BATCH_SIZE_DISPLAY = "Batch Size";
   private static final int BATCH_SIZE_DEFAULT = 2000;
 
   public static final String BULK_SIZE_BYTES_CONFIG = "bulk.size.bytes";
   private static final String BULK_SIZE_BYTES_DOC =
       "The maximum size (in bytes) to be process as a batch when"
-      + " writing records to Elasticsearch. Setting to '-1' will disable "
+      + " writing records to OpenSearch. Setting to '-1' will disable "
       + "this configuration. If the condition set by '" + BATCH_SIZE_CONFIG
       + "' is met first, it will be used instead.";
   private static final String BULK_SIZE_BYTES_DISPLAY = "Bulk Size (bytes)";
@@ -81,7 +81,7 @@ public class ElasticsearchSinkConnectorConfig extends AbstractConfig {
 
   public static final String MAX_IN_FLIGHT_REQUESTS_CONFIG = "max.in.flight.requests";
   private static final String MAX_IN_FLIGHT_REQUESTS_DOC =
-      "The maximum number of indexing requests that can be in-flight to Elasticsearch before "
+      "The maximum number of indexing requests that can be in-flight to OpenSearch before "
       + "blocking further requests.";
   private static final String MAX_IN_FLIGHT_REQUESTS_DISPLAY = "Max In-flight Requests";
   private static final int MAX_IN_FLIGHT_REQUESTS_DEFAULT = 5;
@@ -133,9 +133,9 @@ public class ElasticsearchSinkConnectorConfig extends AbstractConfig {
 
   public static final String CONNECTION_COMPRESSION_CONFIG = "connection.compression";
   private static final String CONNECTION_COMPRESSION_DOC = "Whether to use GZip compression on "
-      + "HTTP connection to ElasticSearch. Valid options are ``true`` and ``false``. "
+      + "HTTP connection to OpenSearch. Valid options are ``true`` and ``false``. "
       + "Default is ``false``. To make this setting to work "
-      + "the ``http.compression`` setting also needs to be enabled at the Elasticsearch nodes "
+      + "the ``http.compression`` setting also needs to be enabled at the OpenSearch nodes "
       + "or the load-balancer before using it.";
   private static final String CONNECTION_COMPRESSION_DISPLAY = "Compression";
   private static final boolean CONNECTION_COMPRESSION_DEFAULT = false;
@@ -149,7 +149,7 @@ public class ElasticsearchSinkConnectorConfig extends AbstractConfig {
 
   public static final String CONNECTION_TIMEOUT_MS_CONFIG = "connection.timeout.ms";
   private static final String CONNECTION_TIMEOUT_MS_CONFIG_DOC = "How long to wait "
-      + "in milliseconds when establishing a connection to the Elasticsearch server. "
+      + "in milliseconds when establishing a connection to the OpenSearch server. "
       + "The task fails if the client fails to connect to the server in this "
       + "interval, and will need to be restarted.";
   private static final String CONNECTION_TIMEOUT_MS_DISPLAY = "Connection Timeout";
@@ -157,7 +157,7 @@ public class ElasticsearchSinkConnectorConfig extends AbstractConfig {
 
   public static final String READ_TIMEOUT_MS_CONFIG = "read.timeout.ms";
   private static final String READ_TIMEOUT_MS_CONFIG_DOC = "How long to wait in "
-      + "milliseconds for the Elasticsearch server to send a response. The task fails "
+      + "milliseconds for the OpenSearch server to send a response. The task fails "
       + "if any read operation times out, and will need to be restarted to resume "
       + "further operations.";
   private static final String READ_TIMEOUT_MS_DISPLAY = "Read Timeout";
@@ -169,7 +169,7 @@ public class ElasticsearchSinkConnectorConfig extends AbstractConfig {
 
   public static final String IGNORE_KEY_CONFIG = "key.ignore";
   private static final String IGNORE_KEY_DOC =
-      "Whether to ignore the record key for the purpose of forming the Elasticsearch document ID."
+      "Whether to ignore the record key for the purpose of forming the OpenSearch document ID."
           + " When this is set to ``true``, document IDs will be generated as the record's "
           + "``topic+partition+offset``.\n Note that this is a global config that applies to all "
           + "topics, use ``" + IGNORE_KEY_TOPICS_CONFIG + "`` to override as ``true`` for specific "
@@ -180,8 +180,8 @@ public class ElasticsearchSinkConnectorConfig extends AbstractConfig {
   public static final String IGNORE_SCHEMA_CONFIG = "schema.ignore";
   private static final String IGNORE_SCHEMA_DOC =
       "Whether to ignore schemas during indexing. When this is set to ``true``, the record schema"
-          + " will be ignored for the purpose of registering an Elasticsearch mapping."
-          + " Elasticsearch will infer the mapping from the data (dynamic mapping needs to be"
+          + " will be ignored for the purpose of registering an OpenSearch mapping."
+          + " OpenSearch will infer the mapping from the data (dynamic mapping needs to be"
           + " enabled by the user).\n Note that this is a global config that applies to all topics,"
           + " use ``" + IGNORE_SCHEMA_TOPICS_CONFIG + "`` to override as ``true`` for specific"
           + " topics.";
@@ -227,7 +227,7 @@ public class ElasticsearchSinkConnectorConfig extends AbstractConfig {
 
   public static final String BEHAVIOR_ON_MALFORMED_DOCS_CONFIG = "behavior.on.malformed.documents";
   private static final String BEHAVIOR_ON_MALFORMED_DOCS_DOC = "How to handle records that "
-      + "Elasticsearch rejects due to some malformation of the document itself, such as an index"
+      + "OpenSearch rejects due to some malformation of the document itself, such as an index"
       + " mapping conflict, a field name containing illegal characters, or a record with a missing"
       + " id. Valid options are ignore', 'warn', and 'fail'.";
   private static final String BEHAVIOR_ON_MALFORMED_DOCS_DISPLAY =
@@ -237,13 +237,13 @@ public class ElasticsearchSinkConnectorConfig extends AbstractConfig {
 
   public static final String WRITE_METHOD_CONFIG = "write.method";
   private static final String WRITE_METHOD_DOC = String.format(
-      "Method used for writing data to Elasticsearch, and one of %s or %s. The default method is"
+      "Method used for writing data to OpenSearch, and one of %s or %s. The default method is"
           + " %s, in which the connector constructs a document from the record value and inserts"
-          + " that document into Elasticsearch, completely replacing any existing document with the"
+          + " that document into OpenSearch, completely replacing any existing document with the"
           + " same ID; this matches previous behavior. The %s method will create a new document if"
           + " one with the specified ID does not yet exist, or will update an existing document"
           + " with the same ID by adding/replacing only those fields present in the record value."
-          + " The %s method may require additional time and resources of Elasticsearch, so consider"
+          + " The %s method may require additional time and resources of OpenSearch, so consider"
           + " increasing the %s and decreasing the %s configuration properties.",
       WriteMethod.INSERT,
       WriteMethod.UPSERT,
@@ -279,11 +279,11 @@ public class ElasticsearchSinkConnectorConfig extends AbstractConfig {
   private static final Password PROXY_PASSWORD_DEFAULT = null;
 
   // Ssl configs
-  public static final String SSL_CONFIG_PREFIX = "elastic.https.";
+  public static final String SSL_CONFIG_PREFIX = "opensearch.https.";
 
-  public static final String SECURITY_PROTOCOL_CONFIG = "elastic.security.protocol";
+  public static final String SECURITY_PROTOCOL_CONFIG = "opensearch.security.protocol";
   private static final String SECURITY_PROTOCOL_DOC =
-      "The security protocol to use when connecting to Elasticsearch. Values can be `PLAINTEXT` or"
+      "The security protocol to use when connecting to OpenSearch. Values can be `PLAINTEXT` or"
           + " `SSL`. If `PLAINTEXT` is passed, all configs prefixed by " + SSL_CONFIG_PREFIX
           + " will be ignored.";
   private static final String SECURITY_PROTOCOL_DISPLAY = "Security protocol";
@@ -798,7 +798,7 @@ public class ElasticsearchSinkConnectorConfig extends AbstractConfig {
 
   public static final ConfigDef CONFIG = baseConfigDef();
 
-  public ElasticsearchSinkConnectorConfig(Map<String, String> props) {
+  public OpenSearchSinkConnectorConfig(Map<String, String> props) {
     super(CONFIG, props);
   }
 

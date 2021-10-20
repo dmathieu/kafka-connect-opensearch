@@ -70,7 +70,7 @@ public class ElasticsearchConnectorIT extends ElasticsearchConnectorBaseIT {
   /**
    * Verify that mapping errors when an index has strict mapping is handled correctly
    */
-  @Test
+  @Test @Disabled
   public void testStrictMappings() throws Exception {
     helperClient.createIndex(TOPIC, "{ \"dynamic\" : \"strict\", " +
             " \"properties\": { \"longProp\": { \"type\": \"long\" } } } }");

@@ -189,7 +189,7 @@ public class ElasticsearchConnectorIT extends ElasticsearchConnectorBaseIT {
     runSimpleTest(props);
   }
 
-  @Test
+  @Test @Disabled
   public void testHappyPathDataStream() throws Exception {
     setDataStream();
 

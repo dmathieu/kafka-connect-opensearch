@@ -108,7 +108,6 @@ public class Validator {
       validateLingerMs();
       validateMaxBufferedRecords();
       validateProxy();
-      validateSsl();
 
       if (!hasErrors()) {
         // no point if previous configs are invalid
@@ -296,23 +295,6 @@ public class Validator {
         addErrorMessage(PROXY_USERNAME_CONFIG, errorMessage);
         addErrorMessage(PROXY_PASSWORD_CONFIG, errorMessage);
       }
-    }
-  }
-
-  private void validateSsl() {
-    Map<String, Object> sslConfigs = config.originalsWithPrefix(SSL_CONFIG_PREFIX);
-    if (sslConfigs.isEmpty()) {
-      String errorMessage = String.format(
-          "At least these SSL configs ('%s', '%s', '%s', and '%s') must be present for SSL"
-          + " support. Otherwise set '%s' to '%s'.",
-          SSL_CONFIG_PREFIX + SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG,
-          SSL_CONFIG_PREFIX + SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG,
-          SSL_CONFIG_PREFIX + SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
-          SSL_CONFIG_PREFIX + SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG,
-          SECURITY_PROTOCOL_CONFIG,
-          SecurityProtocol.PLAINTEXT
-          );
-      addErrorMessage(SECURITY_PROTOCOL_CONFIG, errorMessage);
     }
   }
 

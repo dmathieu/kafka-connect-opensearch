@@ -198,6 +198,7 @@ public class Validator {
   }
 
   private void validateKerberos() {
+
     boolean onlyOneSet = config.kerberosUserPrincipal() != null ^ config.keytabPath() != null;
     if (onlyOneSet) {
       String errorMessage = String.format(

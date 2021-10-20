@@ -15,21 +15,21 @@
 
 package com.dmathieu.kafka.opensearch.integration;
 
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BATCH_SIZE_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BEHAVIOR_ON_NULL_VALUES_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_PASSWORD_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_USERNAME_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.IGNORE_KEY_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.LINGER_MS_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BULK_SIZE_BYTES_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.WRITE_METHOD_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.BATCH_SIZE_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.BEHAVIOR_ON_NULL_VALUES_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.CONNECTION_PASSWORD_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.CONNECTION_USERNAME_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.IGNORE_KEY_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.LINGER_MS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.BULK_SIZE_BYTES_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.WRITE_METHOD_CONFIG;
 import static org.apache.kafka.connect.runtime.ConnectorConfig.VALUE_CONVERTER_CLASS_CONFIG;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig;
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BehaviorOnNullValues;
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.WriteMethod;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.BehaviorOnNullValues;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.WriteMethod;
 import com.dmathieu.kafka.opensearch.helper.OpenSearchContainer;
 
 import org.apache.kafka.clients.admin.ListConsumerGroupOffsetsResult;
@@ -49,7 +49,7 @@ import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("Integration")
-public class ElasticsearchConnectorIT extends ElasticsearchConnectorBaseIT {
+public class OpenSearchConnectorIT extends OpenSearchConnectorBaseIT {
 
   // TODO: test compatibility
 
@@ -75,10 +75,10 @@ public class ElasticsearchConnectorIT extends ElasticsearchConnectorBaseIT {
     helperClient.createIndex(TOPIC, "{ \"dynamic\" : \"strict\", " +
             " \"properties\": { \"longProp\": { \"type\": \"long\" } } } }");
 
-    props.put(ElasticsearchSinkConnectorConfig.BATCH_SIZE_CONFIG, "1");
-    props.put(ElasticsearchSinkConnectorConfig.MAX_RETRIES_CONFIG, "1");
-    props.put(ElasticsearchSinkConnectorConfig.RETRY_BACKOFF_MS_CONFIG, "10");
-    props.put(ElasticsearchSinkConnectorConfig.MAX_IN_FLIGHT_REQUESTS_CONFIG, "2");
+    props.put(OpenSearchSinkConnectorConfig.BATCH_SIZE_CONFIG, "1");
+    props.put(OpenSearchSinkConnectorConfig.MAX_RETRIES_CONFIG, "1");
+    props.put(OpenSearchSinkConnectorConfig.RETRY_BACKOFF_MS_CONFIG, "10");
+    props.put(OpenSearchSinkConnectorConfig.MAX_IN_FLIGHT_REQUESTS_CONFIG, "2");
     connect.configureConnector(CONNECTOR_NAME, props);
     waitForConnectorToStart(CONNECTOR_NAME, TASKS_MAX);
 
@@ -130,10 +130,10 @@ public class ElasticsearchConnectorIT extends ElasticsearchConnectorBaseIT {
 
   @Test
   public void testStopESContainer() throws Exception {
-    props.put(ElasticsearchSinkConnectorConfig.MAX_RETRIES_CONFIG, "2");
-    props.put(ElasticsearchSinkConnectorConfig.RETRY_BACKOFF_MS_CONFIG, "10");
-    props.put(ElasticsearchSinkConnectorConfig.BATCH_SIZE_CONFIG, "1");
-    props.put(ElasticsearchSinkConnectorConfig.MAX_IN_FLIGHT_REQUESTS_CONFIG,
+    props.put(OpenSearchSinkConnectorConfig.MAX_RETRIES_CONFIG, "2");
+    props.put(OpenSearchSinkConnectorConfig.RETRY_BACKOFF_MS_CONFIG, "10");
+    props.put(OpenSearchSinkConnectorConfig.BATCH_SIZE_CONFIG, "1");
+    props.put(OpenSearchSinkConnectorConfig.MAX_IN_FLIGHT_REQUESTS_CONFIG,
             Integer.toString(NUM_RECORDS - 1));
 
     // run connector and write

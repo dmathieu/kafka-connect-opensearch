@@ -10,15 +10,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ElasticsearchSinkConnectorTest {
+public class OpenSearchSinkConnectorTest {
 
-  private ElasticsearchSinkConnector connector;
+  private OpenSearchSinkConnector connector;
   private Map<String, String> settings;
 
   @BeforeEach
   public void before() {
-    settings = ElasticsearchSinkConnectorConfigTest.addNecessaryProps(new HashMap<>());
-    connector = new ElasticsearchSinkConnector();
+    settings = OpenSearchSinkConnectorConfigTest.addNecessaryProps(new HashMap<>());
+    connector = new OpenSearchSinkConnector();
   }
 
   @Test
@@ -51,7 +51,7 @@ public class ElasticsearchSinkConnectorTest {
 
   @Test
   public void shouldReturnSinkTask() {
-    assertEquals(ElasticsearchSinkTask.class, connector.taskClass());
+    assertEquals(OpenSearchSinkTask.class, connector.taskClass());
   }
 
   @Test

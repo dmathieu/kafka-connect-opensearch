@@ -15,23 +15,23 @@
 
 package com.dmathieu.kafka.opensearch;
 
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BATCH_SIZE_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BEHAVIOR_ON_MALFORMED_DOCS_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BEHAVIOR_ON_NULL_VALUES_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_PASSWORD_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_URL_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_USERNAME_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.DATA_STREAM_DATASET_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.DATA_STREAM_TYPE_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.IGNORE_KEY_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.LINGER_MS_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.MAX_BUFFERED_RECORDS_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.MAX_IN_FLIGHT_REQUESTS_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.MAX_RETRIES_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.RETRY_BACKOFF_MS_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.SECURITY_PROTOCOL_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.SSL_CONFIG_PREFIX;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.WRITE_METHOD_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.BATCH_SIZE_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.BEHAVIOR_ON_MALFORMED_DOCS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.BEHAVIOR_ON_NULL_VALUES_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.CONNECTION_PASSWORD_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.CONNECTION_URL_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.CONNECTION_USERNAME_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.DATA_STREAM_DATASET_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.DATA_STREAM_TYPE_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.IGNORE_KEY_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.LINGER_MS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.MAX_BUFFERED_RECORDS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.MAX_IN_FLIGHT_REQUESTS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.MAX_RETRIES_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.RETRY_BACKOFF_MS_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.SECURITY_PROTOCOL_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.SSL_CONFIG_PREFIX;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.WRITE_METHOD_CONFIG;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -40,12 +40,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BehaviorOnMalformedDoc;
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BehaviorOnNullValues;
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.SecurityProtocol;
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.WriteMethod;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.BehaviorOnMalformedDoc;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.BehaviorOnNullValues;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.SecurityProtocol;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.WriteMethod;
 import com.dmathieu.kafka.opensearch.helper.OpenSearchContainer;
-import com.dmathieu.kafka.opensearch.helper.ElasticsearchHelperClient;
+import com.dmathieu.kafka.opensearch.helper.OpenSearchHelperClient;
 import com.dmathieu.kafka.opensearch.helper.NetworkErrorContainer;
 import java.io.IOException;
 import java.util.HashMap;
@@ -67,7 +67,7 @@ import org.elasticsearch.search.SearchHit;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ElasticsearchClientTest {
+public class OpenSearchClientTest {
 
   private static final String INDEX = "index";
   private static final String ELASTIC_SUPERUSER_NAME = "elastic";
@@ -79,8 +79,8 @@ public class ElasticsearchClientTest {
   private static OpenSearchContainer container;
 
   private DataConverter converter;
-  private ElasticsearchHelperClient helperClient;
-  private ElasticsearchSinkConnectorConfig config;
+  private OpenSearchHelperClient helperClient;
+  private OpenSearchSinkConnectorConfig config;
   private Map<String, String> props;
   private String index;
 
@@ -98,14 +98,14 @@ public class ElasticsearchClientTest {
   @BeforeEach
   public void setup() {
     index = TOPIC;
-    props = ElasticsearchSinkConnectorConfigTest.addNecessaryProps(new HashMap<>());
+    props = OpenSearchSinkConnectorConfigTest.addNecessaryProps(new HashMap<>());
     props.put(CONNECTION_URL_CONFIG, container.getConnectionUrl());
     props.put(IGNORE_KEY_CONFIG, "true");
     props.put(LINGER_MS_CONFIG, "1000");
 
-    config = new ElasticsearchSinkConnectorConfig(props);
+    config = new OpenSearchSinkConnectorConfig(props);
     converter = new DataConverter(config);
-    helperClient = new ElasticsearchHelperClient(container.getConnectionUrl(), config);
+    helperClient = new OpenSearchHelperClient(container.getConnectionUrl(), config);
   }
 
   @AfterEach
@@ -117,7 +117,7 @@ public class ElasticsearchClientTest {
 
   @Test
   public void testClose() {
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     client.close();
   }
 
@@ -125,7 +125,7 @@ public class ElasticsearchClientTest {
   public void testCloseFails() throws Exception {
     props.put(BATCH_SIZE_CONFIG, "1");
     props.put(MAX_IN_FLIGHT_REQUESTS_CONFIG, "1");
-    ElasticsearchClient client = new ElasticsearchClient(config, null) {
+    OpenSearchClient client = new OpenSearchClient(config, null) {
       @Override
       public void close() {
         try {
@@ -145,7 +145,7 @@ public class ElasticsearchClientTest {
 
   @Test
   public void testCreateIndex() throws IOException {
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     assertFalse(helperClient.indexExists(index));
 
     client.createIndexOrDataStream(index);
@@ -157,9 +157,9 @@ public class ElasticsearchClientTest {
   public void testCreateExistingDataStream() throws Exception {
     props.put(DATA_STREAM_TYPE_CONFIG, DATA_STREAM_TYPE);
     props.put(DATA_STREAM_DATASET_CONFIG, DATA_STREAM_DATASET);
-    config = new ElasticsearchSinkConnectorConfig(props);
+    config = new OpenSearchSinkConnectorConfig(props);
     index = createIndexName(TOPIC);
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     index = createIndexName(TOPIC);
 
     assertTrue(client.createIndexOrDataStream(index));
@@ -172,9 +172,9 @@ public class ElasticsearchClientTest {
   public void testCreateNewDataStream() throws Exception {
     props.put(DATA_STREAM_TYPE_CONFIG, DATA_STREAM_TYPE);
     props.put(DATA_STREAM_DATASET_CONFIG, DATA_STREAM_DATASET);
-    config = new ElasticsearchSinkConnectorConfig(props);
+    config = new OpenSearchSinkConnectorConfig(props);
     index = createIndexName(TOPIC);
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     index = createIndexName(TOPIC);
 
     assertTrue(client.createIndexOrDataStream(index));
@@ -184,7 +184,7 @@ public class ElasticsearchClientTest {
 
   @Test
   public void testDoesNotCreateAlreadyExistingIndex() throws IOException {
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     assertFalse(helperClient.indexExists(index));
 
     assertTrue(client.createIndexOrDataStream(index));
@@ -197,7 +197,7 @@ public class ElasticsearchClientTest {
 
   @Test
   public void testIndexExists() throws IOException {
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     assertFalse(helperClient.indexExists(index));
 
     assertTrue(client.createIndexOrDataStream(index));
@@ -207,7 +207,7 @@ public class ElasticsearchClientTest {
 
   @Test
   public void testIndexDoesNotExist() throws IOException {
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     assertFalse(helperClient.indexExists(index));
 
     assertFalse(client.indexExists(index));
@@ -217,7 +217,7 @@ public class ElasticsearchClientTest {
   @Test
   @SuppressWarnings("unchecked")
   public void testCreateMapping() throws IOException {
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     client.createIndexOrDataStream(index);
 
     client.createMapping(index, schema());
@@ -240,7 +240,7 @@ public class ElasticsearchClientTest {
 
   @Test
   public void testHasMapping() {
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     client.createIndexOrDataStream(index);
 
     client.createMapping(index, schema());
@@ -251,7 +251,7 @@ public class ElasticsearchClientTest {
 
   @Test
   public void testDoesNotHaveMapping() {
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     client.createIndexOrDataStream(index);
 
     assertFalse(client.hasMapping(index));
@@ -262,8 +262,8 @@ public class ElasticsearchClientTest {
   public void testBuffersCorrectly() throws Exception {
     props.put(MAX_IN_FLIGHT_REQUESTS_CONFIG, "1");
     props.put(MAX_BUFFERED_RECORDS_CONFIG, "1");
-    config = new ElasticsearchSinkConnectorConfig(props);
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    config = new OpenSearchSinkConnectorConfig(props);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     client.createIndexOrDataStream(index);
 
     writeRecord(sinkRecord(0), client);
@@ -288,8 +288,8 @@ public class ElasticsearchClientTest {
   @Test
   public void testFlush() throws Exception {
     props.put(LINGER_MS_CONFIG, String.valueOf(TimeUnit.DAYS.toMillis(1)));
-    config = new ElasticsearchSinkConnectorConfig(props);
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    config = new OpenSearchSinkConnectorConfig(props);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     client.createIndexOrDataStream(index);
 
     writeRecord(sinkRecord(0), client);
@@ -304,7 +304,7 @@ public class ElasticsearchClientTest {
 
   @Test
   public void testIndexRecord() throws Exception {
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     client.createIndexOrDataStream(index);
 
     writeRecord(sinkRecord(0), client);
@@ -319,9 +319,9 @@ public class ElasticsearchClientTest {
   public void testDeleteRecord() throws Exception {
     props.put(BEHAVIOR_ON_NULL_VALUES_CONFIG, BehaviorOnNullValues.DELETE.name());
     props.put(IGNORE_KEY_CONFIG, "false");
-    config = new ElasticsearchSinkConnectorConfig(props);
+    config = new OpenSearchSinkConnectorConfig(props);
     converter = new DataConverter(config);
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     client.createIndexOrDataStream(index);
 
     writeRecord(sinkRecord("key0", 0), client);
@@ -342,9 +342,9 @@ public class ElasticsearchClientTest {
   public void testUpsertRecords() throws Exception {
     props.put(WRITE_METHOD_CONFIG, WriteMethod.UPSERT.name());
     props.put(IGNORE_KEY_CONFIG, "false");
-    config = new ElasticsearchSinkConnectorConfig(props);
+    config = new OpenSearchSinkConnectorConfig(props);
     converter = new DataConverter(config);
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     client.createIndexOrDataStream(index);
 
     writeRecord(sinkRecord("key0", 0), client);
@@ -386,10 +386,10 @@ public class ElasticsearchClientTest {
   @Test
   public void testIgnoreBadRecord() throws Exception {
     props.put(BEHAVIOR_ON_MALFORMED_DOCS_CONFIG, BehaviorOnMalformedDoc.IGNORE.name());
-    config = new ElasticsearchSinkConnectorConfig(props);
+    config = new OpenSearchSinkConnectorConfig(props);
     converter = new DataConverter(config);
 
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     client.createIndexOrDataStream(index);
     client.createMapping(index, schema());
 
@@ -417,7 +417,7 @@ public class ElasticsearchClientTest {
 
   @Test
   public void testFailOnBadRecord() throws Exception {
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     client.createIndexOrDataStream(index);
     client.createMapping(index, schema());
 
@@ -458,11 +458,11 @@ public class ElasticsearchClientTest {
     props.put(MAX_RETRIES_CONFIG, "100");
     props.put(RETRY_BACKOFF_MS_CONFIG, "1000");
     props.put(MAX_IN_FLIGHT_REQUESTS_CONFIG, "1");
-    config = new ElasticsearchSinkConnectorConfig(props);
+    config = new OpenSearchSinkConnectorConfig(props);
     converter = new DataConverter(config);
 
     // mock bulk processor to throw errors
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     client.createIndexOrDataStream(index);
 
     // bring down ES service
@@ -486,13 +486,13 @@ public class ElasticsearchClientTest {
   public void testReporter() throws Exception {
     props.put(IGNORE_KEY_CONFIG, "false");
     props.put(BEHAVIOR_ON_MALFORMED_DOCS_CONFIG, BehaviorOnMalformedDoc.IGNORE.name());
-    config = new ElasticsearchSinkConnectorConfig(props);
+    config = new OpenSearchSinkConnectorConfig(props);
     converter = new DataConverter(config);
 
     ErrantRecordReporter reporter = mock(ErrantRecordReporter.class);
     when(reporter.report(any(), any()))
             .thenReturn(CompletableFuture.completedFuture(null));
-    ElasticsearchClient client = new ElasticsearchClient(config, reporter);
+    OpenSearchClient client = new OpenSearchClient(config, reporter);
     client.createIndexOrDataStream(index);
     client.createMapping(index, schema());
 
@@ -525,7 +525,7 @@ public class ElasticsearchClientTest {
   @Test
   public void testReporterNotCalled() throws Exception {
     ErrantRecordReporter reporter = mock(ErrantRecordReporter.class);
-    ElasticsearchClient client = new ElasticsearchClient(config, reporter);
+    OpenSearchClient client = new OpenSearchClient(config, reporter);
     client.createIndexOrDataStream(index);
 
     writeRecord(sinkRecord(0), client);
@@ -543,13 +543,13 @@ public class ElasticsearchClientTest {
   public void testNoVersionConflict() throws Exception {
     props.put(IGNORE_KEY_CONFIG, "false");
     props.put(WRITE_METHOD_CONFIG, WriteMethod.UPSERT.name());
-    config = new ElasticsearchSinkConnectorConfig(props);
+    config = new OpenSearchSinkConnectorConfig(props);
     converter = new DataConverter(config);
 
     ErrantRecordReporter reporter = mock(ErrantRecordReporter.class);
     ErrantRecordReporter reporter2 = mock(ErrantRecordReporter.class);
-    ElasticsearchClient client = new ElasticsearchClient(config, reporter);
-    ElasticsearchClient client2 = new ElasticsearchClient(config, reporter2);
+    OpenSearchClient client = new OpenSearchClient(config, reporter);
+    OpenSearchClient client2 = new OpenSearchClient(config, reporter2);
 
     client.createIndexOrDataStream(index);
 
@@ -572,9 +572,9 @@ public class ElasticsearchClientTest {
   public void testWriteDataStreamInjectTimestamp() throws Exception {
     props.put(DATA_STREAM_TYPE_CONFIG, DATA_STREAM_TYPE);
     props.put(DATA_STREAM_DATASET_CONFIG, DATA_STREAM_DATASET);
-    config = new ElasticsearchSinkConnectorConfig(props);
+    config = new OpenSearchSinkConnectorConfig(props);
     converter = new DataConverter(config);
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     index = createIndexName(TOPIC);
 
     assertTrue(client.createIndexOrDataStream(index));
@@ -598,8 +598,8 @@ public class ElasticsearchClientTest {
   @Test
   public void testConnectionUrlExtraSlash() {
     props.put(CONNECTION_URL_CONFIG, container.getConnectionUrl() + "/");
-    config = new ElasticsearchSinkConnectorConfig(props);
-    ElasticsearchClient client = new ElasticsearchClient(config, null);
+    config = new OpenSearchSinkConnectorConfig(props);
+    OpenSearchClient client = new OpenSearchClient(config, null);
     client.close();
   }
 
@@ -653,7 +653,7 @@ public class ElasticsearchClientTest {
     );
   }
 
-  private void writeRecord(SinkRecord record, ElasticsearchClient client) {
+  private void writeRecord(SinkRecord record, OpenSearchClient client) {
     client.index(record, converter.convertRecord(record, createIndexName(record.topic())),
             new OffsetTracker.OffsetState(record.kafkaOffset()));
   }

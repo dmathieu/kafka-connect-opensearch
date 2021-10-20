@@ -15,7 +15,7 @@
 
 package com.dmathieu.kafka.opensearch;
 
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BehaviorOnNullValues;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.BehaviorOnNullValues;
 import org.apache.kafka.common.record.TimestampType;
 import org.apache.kafka.connect.data.*;
 import org.apache.kafka.connect.errors.DataException;
@@ -55,11 +55,11 @@ public class DataConverterTest {
 
   @BeforeEach
   public void setUp() {
-    props = ElasticsearchSinkConnectorConfigTest.addNecessaryProps(new HashMap<>());
-    props.put(ElasticsearchSinkConnectorConfig.IGNORE_KEY_CONFIG, "true");
-    props.put(ElasticsearchSinkConnectorConfig.COMPACT_MAP_ENTRIES_CONFIG, "true");
+    props = OpenSearchSinkConnectorConfigTest.addNecessaryProps(new HashMap<>());
+    props.put(OpenSearchSinkConnectorConfig.IGNORE_KEY_CONFIG, "true");
+    props.put(OpenSearchSinkConnectorConfig.COMPACT_MAP_ENTRIES_CONFIG, "true");
 
-    converter = new DataConverter(new ElasticsearchSinkConnectorConfig(props));
+    converter = new DataConverter(new OpenSearchSinkConnectorConfig(props));
     key = "key";
     topic = "topic";
     partition = 0;
@@ -205,8 +205,8 @@ public class DataConverterTest {
     origValue.put("field2", 2);
 
     // Use the older non-compact format for map entries with string keys
-    props.put(ElasticsearchSinkConnectorConfig.COMPACT_MAP_ENTRIES_CONFIG, "false");
-    converter = new DataConverter(new ElasticsearchSinkConnectorConfig(props));
+    props.put(OpenSearchSinkConnectorConfig.COMPACT_MAP_ENTRIES_CONFIG, "false");
+    converter = new DataConverter(new OpenSearchSinkConnectorConfig(props));
 
     Schema preProcessedSchema = converter.preProcessSchema(origSchema);
     assertEquals(
@@ -240,8 +240,8 @@ public class DataConverterTest {
     origValue.put("field2", 2);
 
     // Use the newer compact format for map entries with string keys
-    props.put(ElasticsearchSinkConnectorConfig.COMPACT_MAP_ENTRIES_CONFIG, "true");
-    converter = new DataConverter(new ElasticsearchSinkConnectorConfig(props));
+    props.put(OpenSearchSinkConnectorConfig.COMPACT_MAP_ENTRIES_CONFIG, "true");
+    converter = new DataConverter(new OpenSearchSinkConnectorConfig(props));
     Schema preProcessedSchema = converter.preProcessSchema(origSchema);
     assertEquals(
         SchemaBuilder.map(Schema.STRING_SCHEMA, Schema.INT32_SCHEMA).build(),
@@ -285,8 +285,8 @@ public class DataConverterTest {
     testOptionalFieldWithoutDefault(SchemaBuilder.struct().field("innerField", Schema.BOOLEAN_SCHEMA));
     testOptionalFieldWithoutDefault(SchemaBuilder.map(Schema.STRING_SCHEMA, Schema.BOOLEAN_SCHEMA));
     // Have to test maps with useCompactMapEntries set to true and set to false
-    props.put(ElasticsearchSinkConnectorConfig.COMPACT_MAP_ENTRIES_CONFIG, "false");
-    converter = new DataConverter(new ElasticsearchSinkConnectorConfig(props));
+    props.put(OpenSearchSinkConnectorConfig.COMPACT_MAP_ENTRIES_CONFIG, "false");
+    converter = new DataConverter(new OpenSearchSinkConnectorConfig(props));
     testOptionalFieldWithoutDefault(SchemaBuilder.map(Schema.STRING_SCHEMA, Schema.BOOLEAN_SCHEMA));
   }
 
@@ -308,11 +308,11 @@ public class DataConverterTest {
   @Test
   public void ignoreOnNullValue() {
 
-    props.put(ElasticsearchSinkConnectorConfig.COMPACT_MAP_ENTRIES_CONFIG, "true");
-    props.put(ElasticsearchSinkConnectorConfig.IGNORE_KEY_CONFIG, "false");
-    props.put(ElasticsearchSinkConnectorConfig.IGNORE_SCHEMA_CONFIG, "false");
-    props.put(ElasticsearchSinkConnectorConfig.BEHAVIOR_ON_NULL_VALUES_CONFIG, BehaviorOnNullValues.IGNORE.name());
-    converter = new DataConverter(new ElasticsearchSinkConnectorConfig(props));
+    props.put(OpenSearchSinkConnectorConfig.COMPACT_MAP_ENTRIES_CONFIG, "true");
+    props.put(OpenSearchSinkConnectorConfig.IGNORE_KEY_CONFIG, "false");
+    props.put(OpenSearchSinkConnectorConfig.IGNORE_SCHEMA_CONFIG, "false");
+    props.put(OpenSearchSinkConnectorConfig.BEHAVIOR_ON_NULL_VALUES_CONFIG, BehaviorOnNullValues.IGNORE.name());
+    converter = new DataConverter(new OpenSearchSinkConnectorConfig(props));
 
     SinkRecord sinkRecord = createSinkRecordWithValue(null);
     assertNull(converter.convertRecord(sinkRecord, index));
@@ -320,11 +320,11 @@ public class DataConverterTest {
 
   @Test
   public void deleteOnNullValue() {
-    props.put(ElasticsearchSinkConnectorConfig.COMPACT_MAP_ENTRIES_CONFIG, "true");
-    props.put(ElasticsearchSinkConnectorConfig.IGNORE_KEY_CONFIG, "false");
-    props.put(ElasticsearchSinkConnectorConfig.IGNORE_SCHEMA_CONFIG, "false");
-    props.put(ElasticsearchSinkConnectorConfig.BEHAVIOR_ON_NULL_VALUES_CONFIG, BehaviorOnNullValues.DELETE.name());
-    converter = new DataConverter(new ElasticsearchSinkConnectorConfig(props));
+    props.put(OpenSearchSinkConnectorConfig.COMPACT_MAP_ENTRIES_CONFIG, "true");
+    props.put(OpenSearchSinkConnectorConfig.IGNORE_KEY_CONFIG, "false");
+    props.put(OpenSearchSinkConnectorConfig.IGNORE_SCHEMA_CONFIG, "false");
+    props.put(OpenSearchSinkConnectorConfig.BEHAVIOR_ON_NULL_VALUES_CONFIG, BehaviorOnNullValues.DELETE.name());
+    converter = new DataConverter(new OpenSearchSinkConnectorConfig(props));
     SinkRecord sinkRecord = createSinkRecordWithValue(null);
     DeleteRequest actualRecord = (DeleteRequest) converter.convertRecord(sinkRecord, index);
 
@@ -334,11 +334,11 @@ public class DataConverterTest {
 
   @Test
   public void ignoreDeleteOnNullValueWithNullKey() {
-    props.put(ElasticsearchSinkConnectorConfig.COMPACT_MAP_ENTRIES_CONFIG, "true");
-    props.put(ElasticsearchSinkConnectorConfig.IGNORE_KEY_CONFIG, "false");
-    props.put(ElasticsearchSinkConnectorConfig.IGNORE_SCHEMA_CONFIG, "false");
-    props.put(ElasticsearchSinkConnectorConfig.BEHAVIOR_ON_NULL_VALUES_CONFIG, BehaviorOnNullValues.DELETE.name());
-    converter = new DataConverter(new ElasticsearchSinkConnectorConfig(props));
+    props.put(OpenSearchSinkConnectorConfig.COMPACT_MAP_ENTRIES_CONFIG, "true");
+    props.put(OpenSearchSinkConnectorConfig.IGNORE_KEY_CONFIG, "false");
+    props.put(OpenSearchSinkConnectorConfig.IGNORE_SCHEMA_CONFIG, "false");
+    props.put(OpenSearchSinkConnectorConfig.BEHAVIOR_ON_NULL_VALUES_CONFIG, BehaviorOnNullValues.DELETE.name());
+    converter = new DataConverter(new OpenSearchSinkConnectorConfig(props));
 
     key = null;
 
@@ -348,11 +348,11 @@ public class DataConverterTest {
 
   @Test
   public void failOnNullValue() {
-    props.put(ElasticsearchSinkConnectorConfig.COMPACT_MAP_ENTRIES_CONFIG, "true");
-    props.put(ElasticsearchSinkConnectorConfig.IGNORE_KEY_CONFIG, "false");
-    props.put(ElasticsearchSinkConnectorConfig.IGNORE_SCHEMA_CONFIG, "false");
-    props.put(ElasticsearchSinkConnectorConfig.BEHAVIOR_ON_NULL_VALUES_CONFIG, BehaviorOnNullValues.FAIL.name());
-    converter = new DataConverter(new ElasticsearchSinkConnectorConfig(props));
+    props.put(OpenSearchSinkConnectorConfig.COMPACT_MAP_ENTRIES_CONFIG, "true");
+    props.put(OpenSearchSinkConnectorConfig.IGNORE_KEY_CONFIG, "false");
+    props.put(OpenSearchSinkConnectorConfig.IGNORE_SCHEMA_CONFIG, "false");
+    props.put(OpenSearchSinkConnectorConfig.BEHAVIOR_ON_NULL_VALUES_CONFIG, BehaviorOnNullValues.FAIL.name());
+    converter = new DataConverter(new OpenSearchSinkConnectorConfig(props));
 
     SinkRecord sinkRecord = createSinkRecordWithValue(null);
     try {
@@ -378,7 +378,7 @@ public class DataConverterTest {
 
   @Test
   public void testDoNotInjectPayloadTimestampIfNotDataStream() {
-    converter = new DataConverter(new ElasticsearchSinkConnectorConfig(props));
+    converter = new DataConverter(new OpenSearchSinkConnectorConfig(props));
     Schema preProcessedSchema = converter.preProcessSchema(schema);
     Struct struct = new Struct(preProcessedSchema).put("string", "myValue");
     SinkRecord sinkRecord = createSinkRecordWithValue(struct);
@@ -391,8 +391,8 @@ public class DataConverterTest {
   @Test
   public void testDoNotInjectMissingPayloadTimestampIfDataStreamAndTimestampMapNotFound() {
     configureDataStream();
-    props.put(ElasticsearchSinkConnectorConfig.DATA_STREAM_TIMESTAMP_CONFIG, "timestampFieldNotPresent");
-    converter = new DataConverter(new ElasticsearchSinkConnectorConfig(props));
+    props.put(OpenSearchSinkConnectorConfig.DATA_STREAM_TIMESTAMP_CONFIG, "timestampFieldNotPresent");
+    converter = new DataConverter(new OpenSearchSinkConnectorConfig(props));
     Schema preProcessedSchema = converter.preProcessSchema(schema);
     Struct struct = new Struct(preProcessedSchema).put("string", "myValue");
     SinkRecord sinkRecord = createSinkRecordWithValue(struct);
@@ -404,7 +404,7 @@ public class DataConverterTest {
   @Test
   public void testInjectPayloadTimestampIfDataStreamAndNoTimestampMapSet() {
     configureDataStream();
-    converter = new DataConverter(new ElasticsearchSinkConnectorConfig(props));
+    converter = new DataConverter(new OpenSearchSinkConnectorConfig(props));
     Schema preProcessedSchema = converter.preProcessSchema(schema);
     Struct struct = new Struct(preProcessedSchema).put("string", "myValue");
     SinkRecord sinkRecord = createSinkRecordWithValue(struct);
@@ -417,7 +417,7 @@ public class DataConverterTest {
   @Test
   public void testInjectPayloadTimestampEvenIfAlreadyExistsAndTimestampMapNotSet() {
     configureDataStream();
-    converter = new DataConverter(new ElasticsearchSinkConnectorConfig(props));
+    converter = new DataConverter(new OpenSearchSinkConnectorConfig(props));
     schema = SchemaBuilder
         .struct()
         .name("struct")
@@ -437,8 +437,8 @@ public class DataConverterTest {
   public void testMapPayloadTimestampIfDataStreamSetAndOneTimestampMapSet() {
     String timestampFieldMap = "onefield";
     configureDataStream();
-    props.put(ElasticsearchSinkConnectorConfig.DATA_STREAM_TIMESTAMP_CONFIG, timestampFieldMap);
-    converter = new DataConverter(new ElasticsearchSinkConnectorConfig(props));
+    props.put(OpenSearchSinkConnectorConfig.DATA_STREAM_TIMESTAMP_CONFIG, timestampFieldMap);
+    converter = new DataConverter(new OpenSearchSinkConnectorConfig(props));
     schema = SchemaBuilder
         .struct()
         .name("struct")
@@ -458,8 +458,8 @@ public class DataConverterTest {
   public void testMapPayloadTimestampByPriorityIfMultipleTimestampMapsSet() {
     String timestampFieldToUse = "two";
     configureDataStream();
-    props.put(ElasticsearchSinkConnectorConfig.DATA_STREAM_TIMESTAMP_CONFIG, "one, two, field");
-    converter = new DataConverter(new ElasticsearchSinkConnectorConfig(props));
+    props.put(OpenSearchSinkConnectorConfig.DATA_STREAM_TIMESTAMP_CONFIG, "one, two, field");
+    converter = new DataConverter(new OpenSearchSinkConnectorConfig(props));
     schema = SchemaBuilder
         .struct()
         .name("struct")
@@ -479,8 +479,8 @@ public class DataConverterTest {
   @Test
   public void testDoNotAddExternalVersioningIfDataStream() {
     configureDataStream();
-    props.put(ElasticsearchSinkConnectorConfig.IGNORE_KEY_CONFIG, "false");
-    converter = new DataConverter(new ElasticsearchSinkConnectorConfig(props));
+    props.put(OpenSearchSinkConnectorConfig.IGNORE_KEY_CONFIG, "false");
+    converter = new DataConverter(new OpenSearchSinkConnectorConfig(props));
     Schema preProcessedSchema = converter.preProcessSchema(schema);
     Struct struct = new Struct(preProcessedSchema).put("string", "myValue");
     SinkRecord sinkRecord = createSinkRecordWithValue(struct);
@@ -491,7 +491,7 @@ public class DataConverterTest {
   }
 
   private void configureDataStream() {
-    props.put(ElasticsearchSinkConnectorConfig.DATA_STREAM_TYPE_CONFIG, "logs");
-    props.put(ElasticsearchSinkConnectorConfig.DATA_STREAM_DATASET_CONFIG, "dataset");
+    props.put(OpenSearchSinkConnectorConfig.DATA_STREAM_TYPE_CONFIG, "logs");
+    props.put(OpenSearchSinkConnectorConfig.DATA_STREAM_DATASET_CONFIG, "dataset");
   }
 }

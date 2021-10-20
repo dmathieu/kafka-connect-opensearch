@@ -46,14 +46,14 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig;
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.SecurityProtocol;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.SecurityProtocol;
 
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_PASSWORD_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_URL_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_USERNAME_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.SECURITY_PROTOCOL_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.SSL_CONFIG_PREFIX;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.CONNECTION_PASSWORD_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.CONNECTION_URL_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.CONNECTION_USERNAME_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.SECURITY_PROTOCOL_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.SSL_CONFIG_PREFIX;
 
 /**
  * A specialized TestContainer container for testing OpenSearch.
@@ -152,11 +152,11 @@ public class OpenSearchContainer
     props.put(SECURITY_PROTOCOL_CONFIG, SecurityProtocol.SSL.name());
     props.put(SSL_CONFIG_PREFIX + SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
 
-    ElasticsearchHelperClient helperClient = getHelperClient(props);
+    OpenSearchHelperClient helperClient = getHelperClient(props);
     //createUsersAndRoles(helperClient);
   }
 
-  private void createUsersAndRoles(ElasticsearchHelperClient helperClient ) {
+  private void createUsersAndRoles(OpenSearchHelperClient helperClient ) {
     Map<User, String> users = getUsers();
     List<Role> roles = getRoles();
 
@@ -359,13 +359,13 @@ public class OpenSearchContainer
     }
   }
 
-  public ElasticsearchHelperClient getHelperClient(Map<String, String> props) {
+  public OpenSearchHelperClient getHelperClient(Map<String, String> props) {
     // copy properties so that original properties are not affected
     Map<String, String> superUserProps = new HashMap<>(props);
     superUserProps.put(CONNECTION_USERNAME_CONFIG, OPENSEARCH_SUPERUSER_NAME);
     superUserProps.put(CONNECTION_PASSWORD_CONFIG, OPENSEARCH_SUPERUSER_PASSWORD);
-    ElasticsearchSinkConnectorConfig config = new ElasticsearchSinkConnectorConfig(superUserProps);
-    ElasticsearchHelperClient client = new ElasticsearchHelperClient(props.get(CONNECTION_URL_CONFIG), config);
+    OpenSearchSinkConnectorConfig config = new OpenSearchSinkConnectorConfig(superUserProps);
+    OpenSearchHelperClient client = new OpenSearchHelperClient(props.get(CONNECTION_URL_CONFIG), config);
     return client;
   }
 

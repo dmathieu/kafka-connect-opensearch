@@ -40,16 +40,16 @@ import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BehaviorOnNullValues;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.BehaviorOnNullValues;
 
 @SuppressWarnings("checkstyle:ClassDataAbstractionCoupling")
-public class ElasticsearchSinkTask extends SinkTask {
+public class OpenSearchSinkTask extends SinkTask {
 
-  private static final Logger log = LoggerFactory.getLogger(ElasticsearchSinkTask.class);
+  private static final Logger log = LoggerFactory.getLogger(OpenSearchSinkTask.class);
 
   private DataConverter converter;
-  private ElasticsearchClient client;
-  private ElasticsearchSinkConnectorConfig config;
+  private OpenSearchClient client;
+  private OpenSearchSinkConnectorConfig config;
   private ErrantRecordReporter reporter;
   private Set<String> existingMappings;
   private Set<String> indexCache;
@@ -62,10 +62,10 @@ public class ElasticsearchSinkTask extends SinkTask {
   }
 
   // visible for testing
-  protected void start(Map<String, String> props, ElasticsearchClient client) {
-    log.info("Starting ElasticsearchSinkTask.");
+  protected void start(Map<String, String> props, OpenSearchClient client) {
+    log.info("Starting OpenSearchSinkTask.");
 
-    this.config = new ElasticsearchSinkConnectorConfig(props);
+    this.config = new OpenSearchSinkConnectorConfig(props);
     this.converter = new DataConverter(config);
     this.existingMappings = new HashSet<>();
     this.indexCache = new HashSet<>();
@@ -90,15 +90,15 @@ public class ElasticsearchSinkTask extends SinkTask {
     }
 
     this.client = client != null ? client
-            : new ElasticsearchClient(config, reporter, offsetTracker);
+            : new OpenSearchClient(config, reporter, offsetTracker);
 
-    log.info("Started ElasticsearchSinkTask. Connecting to ES server version: {}",
+    log.info("Started OpenSearchSinkTask. Connecting to ES server version: {}",
         getServerVersion());
   }
 
   @Override
   public void put(Collection<SinkRecord> records) throws ConnectException {
-    log.debug("Putting {} records to Elasticsearch.", records.size());
+    log.debug("Putting {} records to OpenSsearch.", records.size());
 
     client.throwIfFailed();
     partitionPauser.maybeResumePartitions();
@@ -113,7 +113,7 @@ public class ElasticsearchSinkTask extends SinkTask {
         continue;
       }
 
-      logTrace("Writing {} to Elasticsearch.", record);
+      logTrace("Writing {} to OpenSearch.", record);
 
       tryWriteRecord(record, offsetState);
     }
@@ -127,7 +127,7 @@ public class ElasticsearchSinkTask extends SinkTask {
       // This will just trigger an asynchronous execution of any buffered records
       client.flush();
     } catch (IllegalStateException e) {
-      log.debug("Tried to flush data to Elasticsearch, but BulkProcessor is already closed.", e);
+      log.debug("Tried to flush data to OpenSearch, but BulkProcessor is already closed.", e);
     }
     Map<TopicPartition, OffsetAndMetadata> offsets = offsetTracker.offsets();
     log.debug("preCommitting offsets {}", offsets);
@@ -136,7 +136,7 @@ public class ElasticsearchSinkTask extends SinkTask {
 
   @Override
   public void stop() {
-    log.debug("Stopping Elasticsearch client.");
+    log.debug("Stopping OpenSearch client.");
     client.close();
   }
 
@@ -189,7 +189,7 @@ public class ElasticsearchSinkTask extends SinkTask {
   }
 
   /**
-   * Returns the converted index name from a given topic name. Elasticsearch accepts:
+   * Returns the converted index name from a given topic name. OpenSsearch accepts:
    * <ul>
    *   <li>all lowercase</li>
    *   <li>less than 256 bytes</li>
@@ -210,7 +210,7 @@ public class ElasticsearchSinkTask extends SinkTask {
 
     if (index.equals(".") || index.equals("..")) {
       index = index.replace(".", "dot");
-      log.warn("Elasticsearch cannot have indices named {}. Index will be named {}.", topic, index);
+      log.warn("OpenSearch cannot have indices named {}. Index will be named {}.", topic, index);
     }
 
     if (!topic.equals(index)) {
@@ -222,7 +222,7 @@ public class ElasticsearchSinkTask extends SinkTask {
 
   /**
    * Returns the converted index name from a given topic name in the form {type}-{dataset}-{topic}.
-   * For the <code>topic</code>, Elasticsearch accepts:
+   * For the <code>topic</code>, OpenSsearch accepts:
    * <ul>
    *   <li>all lowercase</li>
    *   <li>no longer than 100 bytes</li>
@@ -245,7 +245,7 @@ public class ElasticsearchSinkTask extends SinkTask {
 
   /**
    * Returns the converted index name from a given topic name. If writing to a data stream,
-   * returns the index name in the form {type}-{dataset}-{topic}. For both cases, Elasticsearch
+   * returns the index name in the form {type}-{dataset}-{topic}. For both cases, OpenSearch
    * accepts:
    * <ul>
    *   <li>all lowercase</li>

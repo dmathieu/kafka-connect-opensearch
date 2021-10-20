@@ -15,12 +15,12 @@
 
 package com.dmathieu.kafka.opensearch;
 
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BEHAVIOR_ON_NULL_VALUES_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.DATA_STREAM_DATASET_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.DATA_STREAM_TYPE_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.DROP_INVALID_MESSAGE_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.IGNORE_KEY_CONFIG;
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.IGNORE_SCHEMA_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.BEHAVIOR_ON_NULL_VALUES_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.DATA_STREAM_DATASET_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.DATA_STREAM_TYPE_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.DROP_INVALID_MESSAGE_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.IGNORE_KEY_CONFIG;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.IGNORE_SCHEMA_CONFIG;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BehaviorOnNullValues;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.BehaviorOnNullValues;
 import com.dmathieu.kafka.opensearch.OffsetTracker.OffsetState;
 import org.apache.kafka.common.record.TimestampType;
 import org.apache.kafka.connect.data.Schema;
@@ -51,27 +51,27 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Collections;
 
-public class ElasticsearchSinkTaskTest {
+public class OpenSearchSinkTaskTest {
 
   protected static final String TOPIC = "topic";
 
-  protected ElasticsearchClient client;
-  private ElasticsearchSinkTask task;
+  protected OpenSearchClient client;
+  private OpenSearchSinkTask task;
   private Map<String, String> props;
   private SinkTaskContext context;
 
   private void setUpTask() {
-    task = new ElasticsearchSinkTask();
+    task = new OpenSearchSinkTask();
     task.initialize(context);
     task.start(props, client);
   }
 
   @BeforeEach
   public void setUp() {
-    props = ElasticsearchSinkConnectorConfigTest.addNecessaryProps(new HashMap<>());
+    props = OpenSearchSinkConnectorConfigTest.addNecessaryProps(new HashMap<>());
     props.put(IGNORE_KEY_CONFIG, "true");
 
-    client = mock(ElasticsearchClient.class);
+    client = mock(OpenSearchClient.class);
     context = mock(SinkTaskContext.class);
 
     setUpTask();
@@ -265,7 +265,7 @@ public class ElasticsearchSinkTaskTest {
 
   @Test
   public void testStartAndStop() {
-    task = new ElasticsearchSinkTask();
+    task = new OpenSearchSinkTask();
     task.initialize(context);
     task.start(props);
     task.stop();

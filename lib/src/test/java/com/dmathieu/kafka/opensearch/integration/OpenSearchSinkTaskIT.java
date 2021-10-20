@@ -18,8 +18,8 @@ package com.dmathieu.kafka.opensearch.integration;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnector;
-import com.dmathieu.kafka.opensearch.ElasticsearchSinkTask;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkConnector;
+import com.dmathieu.kafka.opensearch.OpenSearchSinkTask;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.connect.errors.ConnectException;
@@ -49,8 +49,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
-import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.*;
-import static com.dmathieu.kafka.opensearch.integration.ElasticsearchConnectorNetworkIT.errorBulkResponse;
+import static com.dmathieu.kafka.opensearch.OpenSearchSinkConnectorConfig.*;
+import static com.dmathieu.kafka.opensearch.integration.OpenSearchConnectorNetworkIT.errorBulkResponse;
 import static java.util.stream.Collectors.toList;
 import static org.apache.kafka.connect.json.JsonConverterConfig.SCHEMAS_ENABLE_CONFIG;
 import static org.apache.kafka.connect.runtime.ConnectorConfig.CONNECTOR_CLASS_CONFIG;
@@ -68,7 +68,7 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ElasticsearchSinkTaskIT {
+public class OpenSearchSinkTaskIT {
 
   protected static final String TOPIC = "test";
   protected static final int TASKS_MAX = 1;
@@ -97,7 +97,7 @@ public class ElasticsearchSinkTaskIT {
     props.put(RETRY_BACKOFF_MS_CONFIG, "10");
     props.put(BATCH_SIZE_CONFIG, "1");
 
-    ElasticsearchSinkTask task = new ElasticsearchSinkTask();
+    OpenSearchSinkTask task = new OpenSearchSinkTask();
 
     SinkTaskContext context = mock(SinkTaskContext.class);
     task.initialize(context);
@@ -118,7 +118,7 @@ public class ElasticsearchSinkTaskIT {
   @Test
   public void testIndividualFailure() throws JsonProcessingException {
     wireMockServer.stubFor(post(urlPathEqualTo("/_bulk"))
-            .willReturn(okJson(ElasticsearchConnectorNetworkIT.errorBulkResponse(3,
+            .willReturn(okJson(OpenSearchConnectorNetworkIT.errorBulkResponse(3,
                     "strict_dynamic_mapping_exception", 1))));
 
     Map<String, String> props = createProps();
@@ -130,7 +130,7 @@ public class ElasticsearchSinkTaskIT {
     props.put(LINGER_MS_CONFIG, "10000");
     props.put(BEHAVIOR_ON_MALFORMED_DOCS_CONFIG, "ignore");
 
-    final ElasticsearchSinkTask task = new ElasticsearchSinkTask();
+    final OpenSearchSinkTask task = new OpenSearchSinkTask();
     SinkTaskContext context = mock(SinkTaskContext.class);
     task.initialize(context);
     task.start(props);
@@ -174,7 +174,7 @@ public class ElasticsearchSinkTaskIT {
     props.put(IGNORE_KEY_CONFIG, "false");
     props.put(DROP_INVALID_MESSAGE_CONFIG, "true");
 
-    final ElasticsearchSinkTask task = new ElasticsearchSinkTask();
+    final OpenSearchSinkTask task = new OpenSearchSinkTask();
     SinkTaskContext context = mock(SinkTaskContext.class);
     task.initialize(context);
     task.start(props);
@@ -218,7 +218,7 @@ public class ElasticsearchSinkTaskIT {
     props.put(LINGER_MS_CONFIG, "10000");
     props.put(BEHAVIOR_ON_NULL_VALUES_CONFIG, "ignore");
 
-    final ElasticsearchSinkTask task = new ElasticsearchSinkTask();
+    final OpenSearchSinkTask task = new OpenSearchSinkTask();
     SinkTaskContext context = mock(SinkTaskContext.class);
     task.initialize(context);
     task.start(props);
@@ -256,7 +256,7 @@ public class ElasticsearchSinkTaskIT {
   public void testPutRetry() throws Exception {
     wireMockServer.stubFor(post(urlPathEqualTo("/_bulk"))
             .withRequestBody(WireMock.containing("{\"doc_num\":0}"))
-            .willReturn(okJson(ElasticsearchConnectorNetworkIT.errorBulkResponse())));
+            .willReturn(okJson(OpenSearchConnectorNetworkIT.errorBulkResponse())));
 
     wireMockServer.stubFor(post(urlPathEqualTo("/_bulk"))
             .withRequestBody(WireMock.containing("{\"doc_num\":1}"))
@@ -268,7 +268,7 @@ public class ElasticsearchSinkTaskIT {
     props.put(RETRY_BACKOFF_MS_CONFIG, "10");
     props.put(BATCH_SIZE_CONFIG, "1");
 
-    ElasticsearchSinkTask task = new ElasticsearchSinkTask();
+    OpenSearchSinkTask task = new OpenSearchSinkTask();
 
     SinkTaskContext context = mock(SinkTaskContext.class);
     task.initialize(context);
@@ -287,7 +287,7 @@ public class ElasticsearchSinkTaskIT {
               .isEqualTo(ImmutableMap.of(tp, new OffsetAndMetadata(1))));
 
     wireMockServer.stubFor(post(urlPathEqualTo("/_bulk"))
-            .willReturn(okJson(ElasticsearchConnectorNetworkIT.errorBulkResponse())));
+            .willReturn(okJson(OpenSearchConnectorNetworkIT.errorBulkResponse())));
 
     task.put(records);
     await().untilAsserted(() ->
@@ -298,14 +298,14 @@ public class ElasticsearchSinkTaskIT {
   /**
    * Verify partitions are paused and resumed
    */
-  /*@Test
+  /*@Test @Disabled
   public void testOffsetsBackpressure() throws Exception {
     wireMockServer.stubFor(post(urlPathEqualTo("/_bulk"))
-            .willReturn(okJson(ElasticsearchConnectorNetworkIT.errorBulkResponse())));
+            .willReturn(okJson(OpenSearchConnectorNetworkIT.errorBulkResponse())));
 
     wireMockServer.stubFor(post(urlPathEqualTo("/_bulk"))
             .withRequestBody(WireMock.containing("{\"doc_num\":0}"))
-            .willReturn(okJson(ElasticsearchConnectorNetworkIT.errorBulkResponse())
+            .willReturn(okJson(OpenSearchConnectorNetworkIT.errorBulkResponse())
                     .withTransformers(BlockingTransformer.NAME)));
 
     Map<String, String> props = createProps();
@@ -315,7 +315,7 @@ public class ElasticsearchSinkTaskIT {
     props.put(BATCH_SIZE_CONFIG, "1");
     props.put(MAX_BUFFERED_RECORDS_CONFIG, "2");
 
-    ElasticsearchSinkTask task = new ElasticsearchSinkTask();
+    OpenSearchSinkTask task = new OpenSearchSinkTask();
 
     TopicPartition tp1 = new TopicPartition(TOPIC, 0);
 
@@ -347,7 +347,7 @@ public class ElasticsearchSinkTaskIT {
   public void testRebalance() throws Exception {
     wireMockServer.stubFor(post(urlPathEqualTo("/_bulk"))
             .withRequestBody(WireMock.containing("{\"doc_num\":0}"))
-            .willReturn(okJson(ElasticsearchConnectorNetworkIT.errorBulkResponse())));
+            .willReturn(okJson(OpenSearchConnectorNetworkIT.errorBulkResponse())));
 
     wireMockServer.stubFor(post(urlPathEqualTo("/_bulk"))
             .withRequestBody(WireMock.containing("{\"doc_num\":1}"))
@@ -359,7 +359,7 @@ public class ElasticsearchSinkTaskIT {
     props.put(RETRY_BACKOFF_MS_CONFIG, "10");
     props.put(BATCH_SIZE_CONFIG, "1");
 
-    ElasticsearchSinkTask task = new ElasticsearchSinkTask();
+    OpenSearchSinkTask task = new OpenSearchSinkTask();
 
     SinkTaskContext context = mock(SinkTaskContext.class);
     task.initialize(context);
@@ -415,7 +415,7 @@ public class ElasticsearchSinkTaskIT {
     Map<String, String> props = new HashMap<>();
 
     // generic configs
-    props.put(CONNECTOR_CLASS_CONFIG, ElasticsearchSinkConnector.class.getName());
+    props.put(CONNECTOR_CLASS_CONFIG, OpenSearchSinkConnector.class.getName());
     props.put(TOPICS_CONFIG, TOPIC);
     props.put(TASKS_MAX_CONFIG, Integer.toString(TASKS_MAX));
     props.put(KEY_CONVERTER_CLASS_CONFIG, StringConverter.class.getName());

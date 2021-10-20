@@ -1,0 +1,13 @@
+version: 2
+updates:
+- package-ecosystem: gradle
+  directory: "/"
+  schedule:
+    interval: weekly
+    time: "04:00"
+  open-pull-requests-limit: 10
+  reviewers:
+  - dmathieu
+  allow:
+  - dependency-type: direct
+  - dependency-type: indirect

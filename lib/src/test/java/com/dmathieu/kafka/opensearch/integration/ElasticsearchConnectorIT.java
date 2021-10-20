@@ -30,7 +30,7 @@ import static org.awaitility.Awaitility.await;
 import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig;
 import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BehaviorOnNullValues;
 import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.WriteMethod;
-import com.dmathieu.kafka.opensearch.helper.ElasticsearchContainer;
+import com.dmathieu.kafka.opensearch.helper.OpenSearchContainer;
 
 import org.apache.kafka.clients.admin.ListConsumerGroupOffsetsResult;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
@@ -57,7 +57,7 @@ public class ElasticsearchConnectorIT extends ElasticsearchConnectorBaseIT {
   public static void setupBeforeAll() {
     Map<User, String> users = getUsers();
     List<Role> roles = getRoles();
-    container = ElasticsearchContainer.fromSystemProperties().withBasicAuth(users, roles);
+    container = OpenSearchContainer.fromSystemProperties().withBasicAuth(users, roles);
     container.start();
   }
 
@@ -262,20 +262,5 @@ public class ElasticsearchConnectorIT extends ElasticsearchConnectorBaseIT {
         assertEquals(0, docNum);
       }
     }
-  }
-
-  @Test
-  public void testBackwardsCompatibilityDataStream() throws Exception {
-    container.close();
-    container = ElasticsearchContainer.withESVersion("7.0.1");
-    container.start();
-    setupFromContainer();
-
-    runSimpleTest(props);
-
-    helperClient = null;
-    container.close();
-    container = ElasticsearchContainer.fromSystemProperties();
-    container.start();
   }
 }

@@ -35,7 +35,7 @@ import java.util.Map;
 
 import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnector;
 import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig;
-import com.dmathieu.kafka.opensearch.helper.ElasticsearchContainer;
+import com.dmathieu.kafka.opensearch.helper.OpenSearchContainer;
 import com.dmathieu.kafka.opensearch.helper.ElasticsearchHelperClient;
 
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_PASSWORD_CONFIG;
@@ -72,7 +72,7 @@ public class ElasticsearchConnectorBaseIT extends BaseConnectorIT {
   private static final String ES_SINK_CONNECTOR_ROLE = "es_sink_connector_role";
   private static final String ES_SINK_CONNECTOR_DS_ROLE = "es_sink_connector_ds_role";
 
-  protected static ElasticsearchContainer container;
+  protected static OpenSearchContainer container;
 
   protected boolean isDataStream;
   protected ElasticsearchHelperClient helperClient;

@@ -45,12 +45,14 @@ import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.IGN
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.IGNORE_SCHEMA_CONFIG;
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.DATA_STREAM_DATASET_CONFIG;
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.DATA_STREAM_TYPE_CONFIG;
+import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.SSL_CONFIG_PREFIX;
 import static org.apache.kafka.connect.json.JsonConverterConfig.SCHEMAS_ENABLE_CONFIG;
 import static org.apache.kafka.connect.runtime.ConnectorConfig.CONNECTOR_CLASS_CONFIG;
 import static org.apache.kafka.connect.runtime.ConnectorConfig.KEY_CONVERTER_CLASS_CONFIG;
 import static org.apache.kafka.connect.runtime.ConnectorConfig.TASKS_MAX_CONFIG;
 import static org.apache.kafka.connect.runtime.ConnectorConfig.VALUE_CONVERTER_CLASS_CONFIG;
 import static org.apache.kafka.connect.runtime.SinkConnectorConfig.TOPICS_CONFIG;
+import org.apache.kafka.common.config.SslConfigs;
 
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -117,6 +119,10 @@ public class ElasticsearchConnectorBaseIT extends BaseConnectorIT {
     props.put(CONNECTION_URL_CONFIG, container.getConnectionUrl());
     props.put(IGNORE_KEY_CONFIG, "true");
     props.put(IGNORE_SCHEMA_CONFIG, "true");
+
+    props.put(SSL_CONFIG_PREFIX + SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
+    props.put(CONNECTION_USERNAME_CONFIG, "admin");
+    props.put(CONNECTION_PASSWORD_CONFIG, "admin");
 
     return props;
   }

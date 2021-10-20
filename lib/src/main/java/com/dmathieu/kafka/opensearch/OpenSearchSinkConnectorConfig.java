@@ -279,9 +279,9 @@ public class OpenSearchSinkConnectorConfig extends AbstractConfig {
   private static final Password PROXY_PASSWORD_DEFAULT = null;
 
   // Ssl configs
-  public static final String SSL_CONFIG_PREFIX = "elastic.https.";
+  public static final String SSL_CONFIG_PREFIX = "opensearch.https.";
 
-  public static final String SECURITY_PROTOCOL_CONFIG = "elastic.security.protocol";
+  public static final String SECURITY_PROTOCOL_CONFIG = "opensearch.security.protocol";
   private static final String SECURITY_PROTOCOL_DOC =
       "The security protocol to use when connecting to OpenSearch. Values can be `PLAINTEXT` or"
           + " `SSL`. If `PLAINTEXT` is passed, all configs prefixed by " + SSL_CONFIG_PREFIX

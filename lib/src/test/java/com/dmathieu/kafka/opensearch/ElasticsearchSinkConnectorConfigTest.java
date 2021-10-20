@@ -1,5 +1,8 @@
 package com.dmathieu.kafka.opensearch;
 
+
+import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_PASSWORD_CONFIG;
+import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_USERNAME_CONFIG;
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_TIMEOUT_MS_CONFIG;
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.CONNECTION_URL_CONFIG;
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.DATA_STREAM_DATASET_CONFIG;
@@ -12,6 +15,10 @@ import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.PRO
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.READ_TIMEOUT_MS_CONFIG;
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.SECURITY_PROTOCOL_CONFIG;
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.SSL_CONFIG_PREFIX;
+
+import static com.dmathieu.kafka.opensearch.helper.OpenSearchContainer.OPENSEARCH_USER_NAME;
+import static com.dmathieu.kafka.opensearch.helper.OpenSearchContainer.OPENSEARCH_USER_PASSWORD;
+
 import static org.apache.kafka.common.config.SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG;
 
 import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.SecurityProtocol;
@@ -232,6 +239,8 @@ public class ElasticsearchSinkConnectorConfigTest {
     }
     props.put(ElasticsearchSinkConnectorConfig.CONNECTION_URL_CONFIG, "http://localhost:8080");
     props.put(SSL_CONFIG_PREFIX + SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
+    props.put(CONNECTION_USERNAME_CONFIG, OPENSEARCH_USER_NAME);
+    props.put(CONNECTION_PASSWORD_CONFIG, OPENSEARCH_USER_PASSWORD);
 
     return props;
   }

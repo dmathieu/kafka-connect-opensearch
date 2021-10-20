@@ -55,10 +55,7 @@ public class ElasticsearchConnectorIT extends ElasticsearchConnectorBaseIT {
 
   @BeforeAll
   public static void setupBeforeAll() {
-    Map<User, String> users = getUsers();
-    List<Role> roles = getRoles();
-    container = OpenSearchContainer.fromSystemProperties().withBasicAuth(users, roles);
-    container.start();
+    container = OpenSearchContainer.fromSystemProperties();
   }
 
   @Override @BeforeEach
@@ -67,14 +64,6 @@ public class ElasticsearchConnectorIT extends ElasticsearchConnectorBaseIT {
       setupBeforeAll();
     }
     super.setup();
-  }
-
-  @Override
-  protected Map<String, String> createProps() {
-    props = super.createProps();
-    props.put(CONNECTION_USERNAME_CONFIG, ELASTIC_MINIMAL_PRIVILEGES_NAME);
-    props.put(CONNECTION_PASSWORD_CONFIG, ELASTIC_MINIMAL_PRIVILEGES_PASSWORD);
-    return props;
   }
 
   /**

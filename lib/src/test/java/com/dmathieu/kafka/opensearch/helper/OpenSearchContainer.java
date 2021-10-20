@@ -18,6 +18,9 @@ package com.dmathieu.kafka.opensearch.helper;
 import org.apache.kafka.common.config.SslConfigs;
 import org.elasticsearch.client.security.user.User;
 import org.elasticsearch.client.security.user.privileges.Role;
+import org.elasticsearch.client.security.user.privileges.IndicesPrivileges;
+import org.elasticsearch.client.security.user.privileges.Role.Builder;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.ContainerLaunchException;
@@ -40,6 +43,8 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig;
 import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.SecurityProtocol;
@@ -111,17 +116,18 @@ public class OpenSearchContainer
     return new OpenSearchContainer(imageName + ":" + ESVersion);
   }
 
-  private static final String KEY_PASSWORD = "asdfasdf";
   // Super user that has superuser role. Should not be used by connector
   private static final String OPENSEARCH_SUPERUSER_NAME = "admin";
   private static final String OPENSEARCH_SUPERUSER_PASSWORD = "admin";
+
+  public static final String OPENSEARCH_USER_NAME = "admin";
+  public static final String OPENSEARCH_USER_PASSWORD = "admin";
+  private static final String OS_SINK_CONNECTOR_ROLE = "os_sink_connector_role";
 
   private static final long TWO_GIGABYTES = 2L * 1024 * 1024 * 1024;
 
   private final String imageName;
   private String keytabPath;
-  private List<Role> rolesToCreate;
-  private Map<User, String> usersToCreate;
 
   /**
    * Create an OpenSearch container with the given image name with version qualifier.
@@ -139,25 +145,26 @@ public class OpenSearchContainer
   public void start() {
     super.start();
 
-    if (isBasicAuthEnabled()) {
-      Map<String, String> props = new HashMap<>();
-      props.put(CONNECTION_USERNAME_CONFIG, OPENSEARCH_SUPERUSER_NAME);
-      props.put(CONNECTION_PASSWORD_CONFIG, OPENSEARCH_SUPERUSER_PASSWORD);
-      props.put(CONNECTION_URL_CONFIG, this.getConnectionUrl(false));
-      props.put(SECURITY_PROTOCOL_CONFIG, SecurityProtocol.SSL.name());
-      props.put(SSL_CONFIG_PREFIX + SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
+    Map<String, String> props = new HashMap<>();
+    props.put(CONNECTION_USERNAME_CONFIG, OPENSEARCH_SUPERUSER_NAME);
+    props.put(CONNECTION_PASSWORD_CONFIG, OPENSEARCH_SUPERUSER_PASSWORD);
+    props.put(CONNECTION_URL_CONFIG, this.getConnectionUrl(false));
+    props.put(SECURITY_PROTOCOL_CONFIG, SecurityProtocol.SSL.name());
+    props.put(SSL_CONFIG_PREFIX + SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
 
-      ElasticsearchHelperClient helperClient = getHelperClient(props);
-      createUsersAndRoles(helperClient);
-    }
+    ElasticsearchHelperClient helperClient = getHelperClient(props);
+    //createUsersAndRoles(helperClient);
   }
 
   private void createUsersAndRoles(ElasticsearchHelperClient helperClient ) {
+    Map<User, String> users = getUsers();
+    List<Role> roles = getRoles();
+
     try {
-      for (Role role: this.rolesToCreate) {
+      for (Role role: roles) {
         helperClient.createRole(role);
       }
-      for (Map.Entry<User,String> userToPassword: this.usersToCreate.entrySet()) {
+      for (Map.Entry<User,String> userToPassword: users.entrySet()) {
         helperClient.createUser(userToPassword);
       }
     } catch (IOException e) {
@@ -167,11 +174,6 @@ public class OpenSearchContainer
 
   public OpenSearchContainer withKerberosEnabled(String keytab) {
     enableKerberos(keytab);
-    return this;
-  }
-
-  public OpenSearchContainer withBasicAuth(Map<User, String> users, List<Role> roles) {
-    enableBasicAuth(users, roles);
     return this;
   }
 
@@ -188,11 +190,6 @@ public class OpenSearchContainer
           "enableKerberos can only be used before the container is created."
       );
     }
-    if (isBasicAuthEnabled()) {
-      throw new IllegalStateException(
-          "basic auth and Kerberos are mutually exclusive."
-      );
-    }
     keytabPath = keytab;
   }
 
@@ -205,33 +202,11 @@ public class OpenSearchContainer
     return keytabPath != null;
   }
 
-  private void enableBasicAuth(Map<User, String> users, List<Role> roles) {
-    if (isCreated()) {
-      throw new IllegalStateException(
-          "enableBasicAuth can only be used before the container is created."
-      );
-    }
-    if (isKerberosEnabled()) {
-      throw new IllegalStateException(
-          "basic auth and Kerberos are mutually exclusive."
-      );
-    }
-    this.usersToCreate = users;
-    this.rolesToCreate = roles;
-  }
-
-  public boolean isBasicAuthEnabled() {
-    return usersToCreate != null && !this.usersToCreate.isEmpty();
-  }
-
   private String getFullResourcePath(String resourceName) {
     if (isKerberosEnabled()) {
       return "/kerberos/" + resourceName;
-    } else if (isBasicAuthEnabled()) {
-      return "/basic/" + resourceName;
-    } else {
-      return "/ssl/" + resourceName;
     }
+    return "/default/" + resourceName;
   }
 
   @Override
@@ -239,7 +214,7 @@ public class OpenSearchContainer
     super.configure();
 
     waitingFor(
-        Wait.forLogMessage(".*Node started.*", 1)
+        Wait.forLogMessage(".*Node '.*' initialized.*", 1)
             .withStartupTimeout(Duration.ofMinutes(5))
     );
 
@@ -248,19 +223,17 @@ public class OpenSearchContainer
         .withFileFromClasspath("instances.yml", getFullResourcePath("instances.yml"))
         .withDockerfileFromBuilder(this::buildImage);
 
-    // Kerberos and basic auth are mutually exclusive authentication options
-    if (isBasicAuthEnabled()) {
-      log.info("Setting up basic authentication in a Docker image");
-      withEnv("OPENSEARCH_USERNAME", OPENSEARCH_SUPERUSER_NAME);
-      withEnv("OPENSEARCH_PASSWORD", OPENSEARCH_SUPERUSER_PASSWORD);
-    } else if (isKerberosEnabled()) {
+    if (isKerberosEnabled()) {
       log.info("Creating Kerberized OpenSearch image.");
       image.withFileFromFile("es.keytab", new File(keytabPath));
+    } else {
+      log.info("Using basic authentication");
+      withEnv("OPENSEARCH_USERNAME", OPENSEARCH_SUPERUSER_NAME);
+      withEnv("OPENSEARCH_PASSWORD", OPENSEARCH_SUPERUSER_PASSWORD);
     }
 
     log.info("Extending Docker image to generate certs and enable SSL");
     withEnv("OPENSEARCH_PASSWORD", OPENSEARCH_SUPERUSER_PASSWORD);
-    withEnv("STORE_PASSWORD", KEY_PASSWORD);
     withEnv("IP_ADDRESS", hostMachineIpAddress());
 
     image
@@ -394,5 +367,41 @@ public class OpenSearchContainer
     ElasticsearchSinkConnectorConfig config = new ElasticsearchSinkConnectorConfig(superUserProps);
     ElasticsearchHelperClient client = new ElasticsearchHelperClient(props.get(CONNECTION_URL_CONFIG), config);
     return client;
+  }
+
+  protected static List<Role> getRoles() {
+    List<Role> roles = new ArrayList<>();
+    roles.add(getMinimalPrivilegesRole());
+    return roles;
+  }
+
+  protected static Map<User, String> getUsers() {
+    Map<User, String> users = new HashMap<>();
+    users.put(getMinimalPrivilegesUser(), getMinimalPrivilegesPassword());
+    return users;
+  }
+
+  private static Role getMinimalPrivilegesRole() {
+    IndicesPrivileges.Builder indicesPrivilegesBuilder = IndicesPrivileges.builder();
+    IndicesPrivileges indicesPrivileges = indicesPrivilegesBuilder
+        .indices("*")
+        .privileges("create_index", "read", "write", "view_index_metadata")
+        .build();
+    Builder builder = Role.builder();
+    builder = builder.clusterPrivileges("monitor");
+    Role role = builder
+        .name(OS_SINK_CONNECTOR_ROLE)
+        .indicesPrivileges(indicesPrivileges)
+        .build();
+    return role;
+  }
+
+  private static User getMinimalPrivilegesUser() {
+        return new User(OPENSEARCH_USER_NAME,
+            Collections.singletonList(OS_SINK_CONNECTOR_ROLE));
+  }
+
+  private static String getMinimalPrivilegesPassword() {
+    return OPENSEARCH_USER_PASSWORD;
   }
 }

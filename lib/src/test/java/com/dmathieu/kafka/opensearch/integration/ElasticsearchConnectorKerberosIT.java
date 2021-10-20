@@ -17,7 +17,7 @@ import io.confluent.common.utils.IntegrationTest;
 
 import org.junit.jupiter.api.*;
 
-@Tag("Integration")
+@Tag("Integration") @Disabled
 public class ElasticsearchConnectorKerberosIT extends ElasticsearchConnectorBaseIT {
 
   private static File baseDir;

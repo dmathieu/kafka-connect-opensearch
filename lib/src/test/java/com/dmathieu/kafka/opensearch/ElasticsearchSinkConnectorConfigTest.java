@@ -135,29 +135,6 @@ public class ElasticsearchSinkConnectorConfigTest {
   }
 
   @Test
-  public void testSecured() {
-    props.put(CONNECTION_URL_CONFIG, "http://host:9999");
-    assertFalse(new ElasticsearchSinkConnectorConfig(props).isSslEnabled());
-
-    props.put(CONNECTION_URL_CONFIG, "https://host:9999");
-    assertFalse(new ElasticsearchSinkConnectorConfig(props).isSslEnabled());
-
-    props.put(CONNECTION_URL_CONFIG, "http://host1:9992,https://host:9999");
-    assertFalse(new ElasticsearchSinkConnectorConfig(props).isSslEnabled());
-
-    // Default behavior should be backwards compat
-    props.put(CONNECTION_URL_CONFIG, "host1:9992");
-    assertFalse(new ElasticsearchSinkConnectorConfig(props).isSslEnabled());
-
-    props.put(SECURITY_PROTOCOL_CONFIG, SecurityProtocol.SSL.name());
-    assertTrue(new ElasticsearchSinkConnectorConfig(props).isSslEnabled());
-
-    props.put(SECURITY_PROTOCOL_CONFIG, SecurityProtocol.PLAINTEXT.name());
-    props.put(CONNECTION_URL_CONFIG, "https://host:9999");
-    assertFalse(new ElasticsearchSinkConnectorConfig(props).isSslEnabled());
-  }
-
-  @Test
   public void shouldAcceptValidBasicProxy() {
     props.put(PROXY_HOST_CONFIG, "proxy host");
     ElasticsearchSinkConnectorConfig config = new ElasticsearchSinkConnectorConfig(props);
@@ -254,6 +231,8 @@ public class ElasticsearchSinkConnectorConfigTest {
       props = new HashMap<>();
     }
     props.put(ElasticsearchSinkConnectorConfig.CONNECTION_URL_CONFIG, "http://localhost:8080");
+    props.put(SSL_CONFIG_PREFIX + SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
+
     return props;
   }
 }

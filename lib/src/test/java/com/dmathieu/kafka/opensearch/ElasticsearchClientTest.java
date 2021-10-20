@@ -102,6 +102,7 @@ public class ElasticsearchClientTest {
     props.put(CONNECTION_URL_CONFIG, container.getConnectionUrl());
     props.put(IGNORE_KEY_CONFIG, "true");
     props.put(LINGER_MS_CONFIG, "1000");
+
     config = new ElasticsearchSinkConnectorConfig(props);
     converter = new DataConverter(config);
     helperClient = new ElasticsearchHelperClient(container.getConnectionUrl(), config);

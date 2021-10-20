@@ -301,29 +301,18 @@ public class Validator {
 
   private void validateSsl() {
     Map<String, Object> sslConfigs = config.originalsWithPrefix(SSL_CONFIG_PREFIX);
-    if (!config.isSslEnabled()) {
-      if (!sslConfigs.isEmpty()) {
-        String errorMessage = String.format(
-            "'%s' must be set to '%s' to use SSL configs.",
-            SECURITY_PROTOCOL_CONFIG,
-            SecurityProtocol.SSL
-        );
-        addErrorMessage(SECURITY_PROTOCOL_CONFIG, errorMessage);
-      }
-    } else {
-      if (sslConfigs.isEmpty()) {
-        String errorMessage = String.format(
-            "At least these SSL configs ('%s', '%s', '%s', and '%s') must be present for SSL"
-                + " support. Otherwise set '%s' to '%s'.",
-            SSL_CONFIG_PREFIX + SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG,
-            SSL_CONFIG_PREFIX + SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG,
-            SSL_CONFIG_PREFIX + SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
-            SSL_CONFIG_PREFIX + SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG,
-            SECURITY_PROTOCOL_CONFIG,
-            SecurityProtocol.PLAINTEXT
-        );
-        addErrorMessage(SECURITY_PROTOCOL_CONFIG, errorMessage);
-      }
+    if (sslConfigs.isEmpty()) {
+      String errorMessage = String.format(
+          "At least these SSL configs ('%s', '%s', '%s', and '%s') must be present for SSL"
+          + " support. Otherwise set '%s' to '%s'.",
+          SSL_CONFIG_PREFIX + SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG,
+          SSL_CONFIG_PREFIX + SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG,
+          SSL_CONFIG_PREFIX + SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG,
+          SSL_CONFIG_PREFIX + SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG,
+          SECURITY_PROTOCOL_CONFIG,
+          SecurityProtocol.PLAINTEXT
+          );
+      addErrorMessage(SECURITY_PROTOCOL_CONFIG, errorMessage);
     }
   }
 
@@ -410,15 +399,6 @@ public class Validator {
         );
         addErrorMessage(CONNECTION_USERNAME_CONFIG, errorMessage);
         addErrorMessage(CONNECTION_PASSWORD_CONFIG, errorMessage);
-      }
-
-      if (config.isSslEnabled()) {
-        errorMessage = String.format(
-            "Could not connect to Elasticsearch. Check your SSL settings.%s",
-            exceptionMessage
-        );
-
-        addErrorMessage(SECURITY_PROTOCOL_CONFIG, errorMessage);
       }
 
       if (config.isKerberosEnabled()) {

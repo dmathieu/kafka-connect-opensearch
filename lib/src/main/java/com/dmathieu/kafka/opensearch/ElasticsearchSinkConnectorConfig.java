@@ -824,10 +824,6 @@ public class ElasticsearchSinkConnectorConfig extends AbstractConfig {
     return kerberosUserPrincipal() != null || keytabPath() != null;
   }
 
-  public boolean isSslEnabled() {
-    return SecurityProtocol.SSL == securityProtocol();
-  }
-
   public boolean shouldDisableHostnameVerification() {
     String sslEndpointIdentificationAlgorithm =
         getString(SSL_CONFIG_PREFIX + SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG);

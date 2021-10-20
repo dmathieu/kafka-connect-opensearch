@@ -3,7 +3,7 @@ package com.dmathieu.kafka.opensearch.integration;
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.KERBEROS_KEYTAB_PATH_CONFIG;
 import static com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.KERBEROS_PRINCIPAL_CONFIG;
 
-import com.dmathieu.kafka.opensearch.helper.ElasticsearchContainer;
+import com.dmathieu.kafka.opensearch.helper.OpenSearchContainer;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,7 +17,7 @@ import io.confluent.common.utils.IntegrationTest;
 
 import org.junit.jupiter.api.*;
 
-@Tag("Integration")
+@Tag("Integration") @Disabled
 public class ElasticsearchConnectorKerberosIT extends ElasticsearchConnectorBaseIT {
 
   private static File baseDir;
@@ -31,7 +31,7 @@ public class ElasticsearchConnectorKerberosIT extends ElasticsearchConnectorBase
   public static void setupBeforeAll() throws Exception {
     initKdc();
 
-    container = ElasticsearchContainer.fromSystemProperties().withKerberosEnabled(esKeytab);
+    container = OpenSearchContainer.fromSystemProperties().withKerberosEnabled(esKeytab);
     container.start();
   }
 

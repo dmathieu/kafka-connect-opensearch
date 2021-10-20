@@ -110,6 +110,7 @@ public class ValidatorTest {
   @Test
   public void testInvalidCredentials() {
     props.put(CONNECTION_USERNAME_CONFIG, "username");
+    props.remove(CONNECTION_PASSWORD_CONFIG);
     validator = new Validator(props, () -> mockClient);
 
     Config result = validator.validate();
@@ -213,6 +214,9 @@ public class ValidatorTest {
 
   @Test
   public void testInvalidKerberos() throws IOException {
+    props.remove(CONNECTION_USERNAME_CONFIG);
+    props.remove(CONNECTION_PASSWORD_CONFIG);
+
     props.put(KERBEROS_PRINCIPAL_CONFIG, "principal");
     validator = new Validator(props, () -> mockClient);
 
@@ -249,6 +253,9 @@ public class ValidatorTest {
 
   @Test
   public void testValidKerberos() throws IOException {
+    props.remove(CONNECTION_USERNAME_CONFIG);
+    props.remove(CONNECTION_PASSWORD_CONFIG);
+
     // kerberos configs not set
     validator = new Validator(props, () -> mockClient);
 
@@ -352,27 +359,6 @@ public class ValidatorTest {
   }
 
   @Test
-  public void testInvalidSsl() {
-    // no SSL
-    props.put(SECURITY_PROTOCOL_CONFIG, SecurityProtocol.SSL.name());
-    validator = new Validator(props, () -> mockClient);
-
-    Config result = validator.validate();
-    assertHasErrorMessage(result, SECURITY_PROTOCOL_CONFIG, "At least these SSL configs ");
-
-    // SSL
-    props.put(SECURITY_PROTOCOL_CONFIG, SecurityProtocol.PLAINTEXT.name());
-    props.put(SSL_CONFIG_PREFIX + SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, "a");
-    props.put(SSL_CONFIG_PREFIX + SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, "b");
-    props.put(SSL_CONFIG_PREFIX + SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, "c");
-    props.put(SSL_CONFIG_PREFIX + SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, "d");
-    validator = new Validator(props, () -> mockClient);
-
-    result = validator.validate();
-    assertHasErrorMessage(result, SECURITY_PROTOCOL_CONFIG, "to use SSL configs");
-  }
-
-  @Test
   public void testIncompatibleESVersionWithConnector() {
     validator = new Validator(props, () -> mockClient);
     when(mockInfoResponse.getVersion().getNumber()).thenReturn("0.0.5");
@@ -390,27 +376,6 @@ public class ValidatorTest {
 
       assertNoErrors(result);
     }
-  }
-
-  @Test
-  public void testValidSsl() {
-    // no SSL
-    props.put(SECURITY_PROTOCOL_CONFIG, SecurityProtocol.PLAINTEXT.name());
-    validator = new Validator(props, () -> mockClient);
-
-    Config result = validator.validate();
-    assertNoErrors(result);
-
-    // SSL
-    props.put(SECURITY_PROTOCOL_CONFIG, SecurityProtocol.SSL.name());
-    props.put(SSL_CONFIG_PREFIX + SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, "a");
-    props.put(SSL_CONFIG_PREFIX + SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, "b");
-    props.put(SSL_CONFIG_PREFIX + SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, "c");
-    props.put(SSL_CONFIG_PREFIX + SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, "d");
-    validator = new Validator(props, () -> mockClient);
-
-    result = validator.validate();
-    assertNoErrors(result);
   }
 
   @Test

@@ -30,7 +30,7 @@ import static org.awaitility.Awaitility.await;
 import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig;
 import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.BehaviorOnNullValues;
 import com.dmathieu.kafka.opensearch.ElasticsearchSinkConnectorConfig.WriteMethod;
-import com.dmathieu.kafka.opensearch.helper.ElasticsearchContainer;
+import com.dmathieu.kafka.opensearch.helper.OpenSearchContainer;
 
 import org.apache.kafka.clients.admin.ListConsumerGroupOffsetsResult;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
@@ -55,9 +55,7 @@ public class ElasticsearchConnectorIT extends ElasticsearchConnectorBaseIT {
 
   @BeforeAll
   public static void setupBeforeAll() {
-    Map<User, String> users = getUsers();
-    List<Role> roles = getRoles();
-    container = ElasticsearchContainer.fromSystemProperties().withBasicAuth(users, roles);
+    container = OpenSearchContainer.fromSystemProperties();
     container.start();
   }
 
@@ -69,18 +67,10 @@ public class ElasticsearchConnectorIT extends ElasticsearchConnectorBaseIT {
     super.setup();
   }
 
-  @Override
-  protected Map<String, String> createProps() {
-    props = super.createProps();
-    props.put(CONNECTION_USERNAME_CONFIG, ELASTIC_MINIMAL_PRIVILEGES_NAME);
-    props.put(CONNECTION_PASSWORD_CONFIG, ELASTIC_MINIMAL_PRIVILEGES_PASSWORD);
-    return props;
-  }
-
   /**
    * Verify that mapping errors when an index has strict mapping is handled correctly
    */
-  @Test
+  @Test @Disabled
   public void testStrictMappings() throws Exception {
     helperClient.createIndex(TOPIC, "{ \"dynamic\" : \"strict\", " +
             " \"properties\": { \"longProp\": { \"type\": \"long\" } } } }");
@@ -199,7 +189,7 @@ public class ElasticsearchConnectorIT extends ElasticsearchConnectorBaseIT {
     runSimpleTest(props);
   }
 
-  @Test
+  @Test @Disabled
   public void testHappyPathDataStream() throws Exception {
     setDataStream();
 
@@ -262,20 +252,5 @@ public class ElasticsearchConnectorIT extends ElasticsearchConnectorBaseIT {
         assertEquals(0, docNum);
       }
     }
-  }
-
-  @Test
-  public void testBackwardsCompatibilityDataStream() throws Exception {
-    container.close();
-    container = ElasticsearchContainer.withESVersion("7.0.1");
-    container.start();
-    setupFromContainer();
-
-    runSimpleTest(props);
-
-    helperClient = null;
-    container.close();
-    container = ElasticsearchContainer.fromSystemProperties();
-    container.start();
   }
 }

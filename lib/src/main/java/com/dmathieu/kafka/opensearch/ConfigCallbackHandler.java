@@ -19,12 +19,14 @@ import com.sun.security.auth.module.Krb5LoginModule;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
+import java.security.KeyManagementException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import javax.security.auth.Subject;
 import javax.security.auth.kerberos.KerberosPrincipal;
 import javax.security.auth.login.AppConfigurationEntry;
@@ -65,6 +67,8 @@ import org.ietf.jgss.Oid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.dmathieu.kafka.opensearch.UnsafeX509ExtendedTrustManager;
+
 public class ConfigCallbackHandler implements HttpClientConfigCallback {
 
   private static final Logger log = LoggerFactory.getLogger(ConfigCallbackHandler.class);
@@ -100,19 +104,12 @@ public class ConfigCallbackHandler implements HttpClientConfigCallback {
     if (config.isKerberosEnabled()) {
       configureKerberos(builder);
     }
+    configureSslContext(builder);
 
-    if (config.isSslEnabled()) {
-      configureSslContext(builder);
-    }
-
-    if (config.isKerberosEnabled() && config.isSslEnabled()) {
-      log.info("Using Kerberos and SSL connection to {}.", config.connectionUrls());
-    } else if (config.isKerberosEnabled()) {
+    if (config.isKerberosEnabled()) {
       log.info("Using Kerberos connection to {}.", config.connectionUrls());
-    } else if (config.isSslEnabled()) {
-      log.info("Using SSL connection to {}.", config.connectionUrls());
     } else {
-      log.info("Using unsecured connection to {}.", config.connectionUrls());
+      log.info("Using SSL connection to {}.", config.connectionUrls());
     }
 
     return builder;
@@ -163,19 +160,24 @@ public class ConfigCallbackHandler implements HttpClientConfigCallback {
               .build();
       ConnectingIOReactor ioReactor = new DefaultConnectingIOReactor(ioReactorConfig);
 
-      if (config.isSslEnabled()) {
-        HostnameVerifier hostnameVerifier = config.shouldDisableHostnameVerification()
-            ? new NoopHostnameVerifier()
-            : SSLConnectionSocketFactory.getDefaultHostnameVerifier();
-        Registry<SchemeIOSessionStrategy> reg = RegistryBuilder.<SchemeIOSessionStrategy>create()
-            .register("http", NoopIOSessionStrategy.INSTANCE)
-            .register("https", new SSLIOSessionStrategy(sslContext(), hostnameVerifier))
-            .build();
+      SSLContext sslContext = sslContext();
+      HostnameVerifier hostnameVerifier = SSLConnectionSocketFactory.getDefaultHostnameVerifier();
+      if (config.shouldDisableHostnameVerification()) {
+        hostnameVerifier = new NoopHostnameVerifier();
 
-        cm = new PoolingNHttpClientConnectionManager(ioReactor, reg);
-      } else {
-        cm = new PoolingNHttpClientConnectionManager(ioReactor);
+        try {
+          sslContext.init(null, new TrustManager[]{ UnsafeX509ExtendedTrustManager.getInstance() }, null);
+        } catch (KeyManagementException e) {
+          log.info("Failed setting unsafe trust manager");
+        }
       }
+
+      Registry<SchemeIOSessionStrategy> reg = RegistryBuilder.<SchemeIOSessionStrategy>create()
+        .register("http", NoopIOSessionStrategy.INSTANCE)
+        .register("https", new SSLIOSessionStrategy(sslContext, hostnameVerifier))
+        .build();
+
+      cm = new PoolingNHttpClientConnectionManager(ioReactor, reg);
 
       // Allowing up to two http connections per processing thread to a given host
       int maxPerRoute = Math.max(10, config.maxInFlightRequests() * 2);
@@ -244,11 +246,19 @@ public class ConfigCallbackHandler implements HttpClientConfigCallback {
    * @param builder the HttpAsyncClientBuilder
    */
   private void configureSslContext(HttpAsyncClientBuilder builder) {
-    HostnameVerifier hostnameVerifier = config.shouldDisableHostnameVerification()
-        ? new NoopHostnameVerifier()
-        : SSLConnectionSocketFactory.getDefaultHostnameVerifier();
-
     SSLContext sslContext = sslContext();
+
+    HostnameVerifier hostnameVerifier = SSLConnectionSocketFactory.getDefaultHostnameVerifier();
+    if (config.shouldDisableHostnameVerification()) {
+      hostnameVerifier = new NoopHostnameVerifier();
+
+      try {
+        sslContext.init(null, new TrustManager[]{ UnsafeX509ExtendedTrustManager.getInstance() }, null);
+      } catch (KeyManagementException e) {
+        log.info("Failed setting unsafe trust manager");
+      }
+    }
+
     builder.setSSLContext(sslContext);
     builder.setSSLHostnameVerifier(hostnameVerifier);
     builder.setSSLStrategy(new SSLIOSessionStrategy(sslContext, hostnameVerifier));

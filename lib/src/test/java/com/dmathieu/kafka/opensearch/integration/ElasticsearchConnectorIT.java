@@ -56,6 +56,7 @@ public class ElasticsearchConnectorIT extends ElasticsearchConnectorBaseIT {
   @BeforeAll
   public static void setupBeforeAll() {
     container = OpenSearchContainer.fromSystemProperties();
+    container.start();
   }
 
   @Override @BeforeEach

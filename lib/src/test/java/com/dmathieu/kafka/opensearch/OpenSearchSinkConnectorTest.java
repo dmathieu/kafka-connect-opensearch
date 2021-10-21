@@ -63,9 +63,6 @@ public class OpenSearchSinkConnectorTest {
   @Test
   public void testVersion() {
     assertNotNull(connector.version());
-    assertFalse(connector.version().equals("0.0.0.0"));
-    assertFalse(connector.version().equals("unknown"));
-    // Match semver with potentially a qualifier in the end
-    assertTrue(connector.version().matches("^(\\d+\\.){2}?(\\*|\\d+)(-.*)?$"));
+    assertEquals("DEV", connector.version());
   }
 }

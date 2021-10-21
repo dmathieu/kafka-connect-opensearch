@@ -1,10 +1,10 @@
-name: Release Assets
+name: Release
 on:
   release:
     types: [published]
 
 jobs:
-  assets:
+  release:
     runs-on: ubuntu-latest
     steps:
     - name: Check out repository
@@ -17,6 +17,10 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
         cache: gradle
+    - name: Set Version
+      env:
+        TAG_NAME: ${{ github.event.release.tag_name }}
+      run: sed -i "s/DEV/${TAG_NAME}/g" lib/src/main/resources/kafka-connect-opensearch-version.properties
     - name: Build project
       run: |-
         ./gradlew build -x test

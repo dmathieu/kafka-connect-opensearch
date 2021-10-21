@@ -274,9 +274,7 @@ public class OpenSearchSinkTaskTest {
   @Test
   public void testVersion() {
     setUpTask();
-    assertNotEquals("0.0.0.0", task.version());
-    // Match semver with potentially a qualifier in the end
-    assertTrue(task.version().matches("^(\\d+\\.){2}?(\\*|\\d+)(-.*)?$"));
+    assertEquals("DEV", task.version());
   }
 
   @Test

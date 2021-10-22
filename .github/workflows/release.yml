@@ -23,8 +23,8 @@ jobs:
       run: sed -i "s/DEV/${TAG_NAME}/g" lib/src/main/resources/kafka-connect-opensearch-version.properties
     - name: Build project
       run: |-
-        ./gradlew build -x test
-        mv lib/build/libs/lib.jar kafka-connect-opensearch.jar
+        ./gradlew shadowJar
+        mv lib/build/libs/lib-all.jar kafka-connect-opensearch.jar
     - name: Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')

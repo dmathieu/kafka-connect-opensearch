@@ -70,7 +70,7 @@ public class OpenSearchConnectorIT extends OpenSearchConnectorBaseIT {
   /**
    * Verify that mapping errors when an index has strict mapping is handled correctly
    */
-  @Test @Disabled
+  @Test
   public void testStrictMappings() throws Exception {
     helperClient.createIndex(TOPIC, "{ \"dynamic\" : \"strict\", " +
             " \"properties\": { \"longProp\": { \"type\": \"long\" } } } }");

@@ -16,10 +16,10 @@
 package com.dmathieu.kafka.opensearch.helper;
 
 import org.apache.kafka.common.config.SslConfigs;
-import org.elasticsearch.client.security.user.User;
-import org.elasticsearch.client.security.user.privileges.Role;
-import org.elasticsearch.client.security.user.privileges.IndicesPrivileges;
-import org.elasticsearch.client.security.user.privileges.Role.Builder;
+import org.opensearch.client.security.user.User;
+import org.opensearch.client.security.user.privileges.Role;
+import org.opensearch.client.security.user.privileges.IndicesPrivileges;
+import org.opensearch.client.security.user.privileges.Role.Builder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

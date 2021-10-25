@@ -22,26 +22,26 @@ import org.apache.kafka.connect.data.Schema;
 import org.apache.kafka.connect.errors.ConnectException;
 import org.apache.kafka.connect.sink.ErrantRecordReporter;
 import org.apache.kafka.connect.sink.SinkRecord;
-import org.elasticsearch.ElasticsearchStatusException;
-import org.elasticsearch.action.ActionListener;
-import org.elasticsearch.action.DocWriteRequest;
-import org.elasticsearch.action.bulk.BackoffPolicy;
-import org.elasticsearch.action.bulk.BulkItemResponse;
-import org.elasticsearch.action.bulk.BulkProcessor;
-import org.elasticsearch.action.bulk.BulkProcessor.Listener;
-import org.elasticsearch.action.bulk.BulkRequest;
-import org.elasticsearch.action.bulk.BulkResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.CreateDataStreamRequest;
-import org.elasticsearch.client.indices.CreateIndexRequest;
-import org.elasticsearch.client.indices.GetIndexRequest;
-import org.elasticsearch.client.indices.GetMappingsRequest;
-import org.elasticsearch.client.indices.GetMappingsResponse;
-import org.elasticsearch.client.indices.PutMappingRequest;
-import org.elasticsearch.cluster.metadata.MappingMetadata;
-import org.elasticsearch.common.unit.TimeValue;
+import org.opensearch.OpenSearchStatusException;
+import org.opensearch.action.ActionListener;
+import org.opensearch.action.DocWriteRequest;
+import org.opensearch.action.bulk.BackoffPolicy;
+import org.opensearch.action.bulk.BulkItemResponse;
+import org.opensearch.action.bulk.BulkProcessor;
+import org.opensearch.action.bulk.BulkProcessor.Listener;
+import org.opensearch.action.bulk.BulkRequest;
+import org.opensearch.action.bulk.BulkResponse;
+import org.opensearch.client.RequestOptions;
+import org.opensearch.client.RestClient;
+import org.opensearch.client.RestHighLevelClient;
+import org.opensearch.client.indices.CreateDataStreamRequest;
+import org.opensearch.client.indices.CreateIndexRequest;
+import org.opensearch.client.indices.GetIndexRequest;
+import org.opensearch.client.indices.GetMappingsRequest;
+import org.opensearch.client.indices.GetMappingsResponse;
+import org.opensearch.client.indices.PutMappingRequest;
+import org.opensearch.cluster.metadata.MappingMetadata;
+import org.opensearch.common.unit.TimeValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -445,7 +445,7 @@ public class OpenSearchClient {
         () -> {
           try {
             client.indices().createDataStream(request, RequestOptions.DEFAULT);
-          } catch (ElasticsearchStatusException | IOException e) {
+          } catch (OpenSearchStatusException | IOException e) {
             if (!e.getMessage().contains(RESOURCE_ALREADY_EXISTS_EXCEPTION)) {
               throw e;
             }
@@ -469,7 +469,7 @@ public class OpenSearchClient {
         () -> {
           try {
             client.indices().create(request, RequestOptions.DEFAULT);
-          } catch (ElasticsearchStatusException | IOException e) {
+          } catch (OpenSearchStatusException | IOException e) {
             if (!e.getMessage().contains(RESOURCE_ALREADY_EXISTS_EXCEPTION)) {
               throw e;
             }
@@ -481,7 +481,7 @@ public class OpenSearchClient {
   }
 
   /**
-   * Processes a response from a {@link org.elasticsearch.action.bulk.BulkItemRequest}.
+   * Processes a response from a {@link org.opensearch.action.bulk.BulkItemRequest}.
    * Successful responses are ignored. Failed responses are reported to the DLQ and handled
    * according to configuration (ignore or fail). Version conflicts are ignored.
    *

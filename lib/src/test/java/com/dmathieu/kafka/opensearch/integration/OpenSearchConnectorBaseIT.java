@@ -18,12 +18,12 @@ package com.dmathieu.kafka.opensearch.integration;
 import org.apache.kafka.connect.json.JsonConverter;
 import org.apache.kafka.connect.storage.StringConverter;
 import org.apache.kafka.test.TestUtils;
-import org.elasticsearch.ElasticsearchStatusException;
-import org.elasticsearch.client.security.user.User;
-import org.elasticsearch.client.security.user.privileges.IndicesPrivileges;
-import org.elasticsearch.client.security.user.privileges.Role;
-import org.elasticsearch.client.security.user.privileges.Role.Builder;
-import org.elasticsearch.search.SearchHit;
+import org.opensearch.OpenSearchStatusException;
+import org.opensearch.client.security.user.User;
+import org.opensearch.client.security.user.privileges.IndicesPrivileges;
+import org.opensearch.client.security.user.privileges.Role;
+import org.opensearch.client.security.user.privileges.Role.Builder;
+import org.opensearch.search.SearchHit;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -176,7 +176,7 @@ public class OpenSearchConnectorBaseIT extends BaseConnectorIT {
         () -> {
           try {
             return helperClient.getDocCount(index) == numRecords;
-          } catch (ElasticsearchStatusException e) {
+          } catch (OpenSearchStatusException e) {
             if (e.getMessage().contains("index_not_found_exception")) {
               return false;
             }

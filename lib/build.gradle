@@ -13,14 +13,14 @@ repositories {
 
 ext {
     kafkaVersion = "6.2.1-ce"
-    esVersion = "7.9.3"
+    osVersion = "1.1.0"
 }
 
 dependencies {
     implementation 'io.confluent:common-utils:6.2.1'
 
-    implementation "org.elasticsearch.client:elasticsearch-rest-high-level-client:$esVersion"
-    implementation "org.elasticsearch:elasticsearch:$esVersion"
+    implementation "org.opensearch.client:opensearch-rest-high-level-client:$osVersion"
+    implementation "org.opensearch:opensearch:$osVersion"
 
     implementation "org.apache.kafka:connect-api:$kafkaVersion"
     implementation "org.apache.kafka:connect-json:$kafkaVersion"

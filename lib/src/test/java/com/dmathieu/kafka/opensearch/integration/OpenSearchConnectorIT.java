@@ -37,9 +37,9 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.connect.storage.StringConverter;
 import io.confluent.common.utils.IntegrationTest;
-import org.elasticsearch.client.security.user.User;
-import org.elasticsearch.client.security.user.privileges.Role;
-import org.elasticsearch.search.SearchHit;
+import org.opensearch.client.security.user.User;
+import org.opensearch.client.security.user.privileges.Role;
+import org.opensearch.search.SearchHit;
 
 import java.time.Duration;
 import java.util.List;

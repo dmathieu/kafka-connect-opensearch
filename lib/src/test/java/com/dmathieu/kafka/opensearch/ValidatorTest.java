@@ -50,11 +50,11 @@ import java.util.Map;
 import org.apache.kafka.common.config.Config;
 import org.apache.kafka.common.config.ConfigValue;
 import org.apache.kafka.common.config.SslConfigs;
-import org.elasticsearch.ElasticsearchStatusException;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.core.MainResponse;
-import org.elasticsearch.rest.RestStatus;
+import org.opensearch.OpenSearchStatusException;
+import org.opensearch.client.RequestOptions;
+import org.opensearch.client.RestHighLevelClient;
+import org.opensearch.client.core.MainResponse;
+import org.opensearch.rest.RestStatus;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -127,7 +127,7 @@ public class ValidatorTest {
 
   @Test
   public void testClientThrowsOpenSearchStatusException() throws IOException {
-    when(mockClient.ping(any(RequestOptions.class))).thenThrow(new ElasticsearchStatusException("Deleted resource.", RestStatus.GONE));
+    when(mockClient.ping(any(RequestOptions.class))).thenThrow(new OpenSearchStatusException("Deleted resource.", RestStatus.GONE));
     validator = new Validator(props, () -> mockClient);
     Config result = validator.validate();
     assertHasErrorMessage(result, CONNECTION_URL_CONFIG, "Could not connect to OpenSearch. Error message: Deleted resource.");

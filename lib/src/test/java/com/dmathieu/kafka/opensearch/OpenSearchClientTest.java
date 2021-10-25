@@ -61,8 +61,8 @@ import org.apache.kafka.connect.errors.ConnectException;
 import org.apache.kafka.connect.sink.ErrantRecordReporter;
 import org.apache.kafka.connect.sink.SinkRecord;
 import org.apache.kafka.test.TestUtils;
-import org.elasticsearch.ElasticsearchStatusException;
-import org.elasticsearch.search.SearchHit;
+import org.opensearch.OpenSearchStatusException;
+import org.opensearch.search.SearchHit;
 
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -70,8 +70,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class OpenSearchClientTest {
 
   private static final String INDEX = "index";
-  private static final String ELASTIC_SUPERUSER_NAME = "elastic";
-  private static final String ELASTIC_SUPERUSER_PASSWORD = "elastic";
+  private static final String OPENSEARCH_SUPERUSER_NAME = "admin";
+  private static final String OPENSEARCH_SUPERUSER_PASSWORD = "admin";
   private static final String TOPIC = "index";
   private static final String DATA_STREAM_TYPE = "logs";
   private static final String DATA_STREAM_DATASET = "dataset";
@@ -640,7 +640,7 @@ public class OpenSearchClientTest {
         () -> {
           try {
             return helperClient.getDocCount(index) == expectedRecords;
-          } catch (ElasticsearchStatusException e) {
+          } catch (OpenSearchStatusException e) {
             if (e.getMessage().contains("index_not_found_exception")) {
               return false;
             }

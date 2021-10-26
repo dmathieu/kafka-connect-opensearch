@@ -82,6 +82,7 @@ public class OpenSearchConnectorIT extends OpenSearchConnectorBaseIT {
     connect.configureConnector(CONNECTOR_NAME, props);
     waitForConnectorToStart(CONNECTOR_NAME, TASKS_MAX);
 
+    assertThat(getConnectorOffset(CONNECTOR_NAME, TOPIC, 0)).isEqualTo(0);
     connect.kafka().produce(TOPIC, "key1", "{\"longProp\":1}");
     connect.kafka().produce(TOPIC, "key2", "{\"any-prop\":1}");
     connect.kafka().produce(TOPIC, "key3", "{\"any-prop\":1}");

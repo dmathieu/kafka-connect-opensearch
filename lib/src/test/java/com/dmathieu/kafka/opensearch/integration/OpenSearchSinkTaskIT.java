@@ -98,12 +98,13 @@ public class OpenSearchSinkTaskIT {
     props.put(BATCH_SIZE_CONFIG, "1");
 
     OpenSearchSinkTask task = new OpenSearchSinkTask();
+    TopicPartition tp = new TopicPartition(TOPIC, 0);
 
     SinkTaskContext context = mock(SinkTaskContext.class);
+    when(context.assignment()).thenReturn(ImmutableSet.of(tp));
     task.initialize(context);
     task.start(props);
 
-    TopicPartition tp = new TopicPartition(TOPIC, 0);
     List<SinkRecord> records = ImmutableList.of(
             sinkRecord(tp, 0),
             sinkRecord(tp, 1));
@@ -131,11 +132,13 @@ public class OpenSearchSinkTaskIT {
     props.put(BEHAVIOR_ON_MALFORMED_DOCS_CONFIG, "ignore");
 
     final OpenSearchSinkTask task = new OpenSearchSinkTask();
+    TopicPartition tp = new TopicPartition(TOPIC, 0);
+
     SinkTaskContext context = mock(SinkTaskContext.class);
+    when(context.assignment()).thenReturn(ImmutableSet.of(tp));
     task.initialize(context);
     task.start(props);
 
-    TopicPartition tp = new TopicPartition(TOPIC, 0);
     List<SinkRecord> records = IntStream.range(0, 6).boxed()
             .map(offset -> sinkRecord(tp, offset))
             .collect(toList());
@@ -155,8 +158,10 @@ public class OpenSearchSinkTaskIT {
     assertThatThrownBy(() -> task.put(records))
             .isInstanceOf(ConnectException.class)
             .hasMessageContaining("Indexing record failed");
-    assertThat(task.preCommit(currentOffsets))
-            .isEqualTo(ImmutableMap.of(tp, new OffsetAndMetadata(1)));
+
+    currentOffsets = ImmutableMap.of(tp, new OffsetAndMetadata(0));
+    assertThat(getOffsetOrZero(task.preCommit(currentOffsets), tp))
+            .isLessThanOrEqualTo(1);
   }
 
   @Test
@@ -175,11 +180,13 @@ public class OpenSearchSinkTaskIT {
     props.put(DROP_INVALID_MESSAGE_CONFIG, "true");
 
     final OpenSearchSinkTask task = new OpenSearchSinkTask();
+    TopicPartition tp = new TopicPartition(TOPIC, 0);
+
     SinkTaskContext context = mock(SinkTaskContext.class);
+    when(context.assignment()).thenReturn(ImmutableSet.of(tp));
     task.initialize(context);
     task.start(props);
 
-    TopicPartition tp = new TopicPartition(TOPIC, 0);
     List<SinkRecord> records = ImmutableList.of(
             sinkRecord(tp, 0),
             sinkRecord(tp, 1, null, "value"), // this should throw a DataException
@@ -200,8 +207,10 @@ public class OpenSearchSinkTaskIT {
     assertThatThrownBy(() -> task.put(records))
             .isInstanceOf(DataException.class)
             .hasMessageContaining("Key is used as document id and can not be null");
-    assertThat(task.preCommit(currentOffsets))
-            .isEqualTo(ImmutableMap.of(tp, new OffsetAndMetadata(1)));
+
+    currentOffsets = ImmutableMap.of(tp, new OffsetAndMetadata(0));
+    assertThat(task.preCommit(currentOffsets).get(tp).offset())
+            .isLessThanOrEqualTo(1);
   }
 
   @Test
@@ -219,11 +228,13 @@ public class OpenSearchSinkTaskIT {
     props.put(BEHAVIOR_ON_NULL_VALUES_CONFIG, "ignore");
 
     final OpenSearchSinkTask task = new OpenSearchSinkTask();
+    TopicPartition tp = new TopicPartition(TOPIC, 0);
+
     SinkTaskContext context = mock(SinkTaskContext.class);
+    when(context.assignment()).thenReturn(ImmutableSet.of(tp));
     task.initialize(context);
     task.start(props);
 
-    TopicPartition tp = new TopicPartition(TOPIC, 0);
     List<SinkRecord> records = ImmutableList.of(
             sinkRecord(tp, 0),
             sinkRecord(tp, 1, "testKey", null),
@@ -244,8 +255,10 @@ public class OpenSearchSinkTaskIT {
     assertThatThrownBy(() -> task.put(records))
             .isInstanceOf(DataException.class)
             .hasMessageContaining("null value encountered");
-    assertThat(task.preCommit(currentOffsets))
-            .isEqualTo(ImmutableMap.of(tp, new OffsetAndMetadata(1)));
+
+    currentOffsets = ImmutableMap.of(tp, new OffsetAndMetadata(0));
+    assertThat(task.preCommit(currentOffsets).get(tp).offset())
+            .isLessThanOrEqualTo(1);
   }
 
   /**
@@ -269,22 +282,21 @@ public class OpenSearchSinkTaskIT {
     props.put(BATCH_SIZE_CONFIG, "1");
 
     OpenSearchSinkTask task = new OpenSearchSinkTask();
+    TopicPartition tp = new TopicPartition(TOPIC, 0);
 
     SinkTaskContext context = mock(SinkTaskContext.class);
+    when(context.assignment()).thenReturn(ImmutableSet.of(tp));
     task.initialize(context);
     task.start(props);
 
-    TopicPartition tp = new TopicPartition(TOPIC, 0);
     List<SinkRecord> records = ImmutableList.of(
             sinkRecord(tp, 0),
             sinkRecord(tp, 1));
+    task.open(ImmutableList.of(tp));
     task.put(records);
 
     Map<TopicPartition, OffsetAndMetadata> currentOffsets =
             ImmutableMap.of(tp, new OffsetAndMetadata(2));
-    await().untilAsserted(() ->
-      assertThat(task.preCommit(currentOffsets))
-              .isEqualTo(ImmutableMap.of(tp, new OffsetAndMetadata(1))));
 
     wireMockServer.stubFor(post(urlPathEqualTo("/_bulk"))
             .willReturn(okJson(OpenSearchConnectorNetworkIT.errorBulkResponse())));
@@ -343,7 +355,7 @@ public class OpenSearchSinkTaskIT {
   /**
    * Verify offsets are updated when partitions are closed/open
    */
-  @Test
+  @Test @Disabled("Reenable when/if we reenable async flushing")
   public void testRebalance() throws Exception {
     wireMockServer.stubFor(post(urlPathEqualTo("/_bulk"))
             .withRequestBody(WireMock.containing("{\"doc_num\":0}"))
@@ -429,5 +441,10 @@ public class OpenSearchSinkTaskIT {
     props.put(WRITE_METHOD_CONFIG, WriteMethod.UPSERT.toString());
 
     return props;
+  }
+
+  private long getOffsetOrZero(Map<TopicPartition, OffsetAndMetadata> offsetMap, TopicPartition tp) {
+    OffsetAndMetadata offsetAndMetadata = offsetMap.get(tp);
+    return offsetAndMetadata == null ? 0 : offsetAndMetadata.offset();
   }
 }

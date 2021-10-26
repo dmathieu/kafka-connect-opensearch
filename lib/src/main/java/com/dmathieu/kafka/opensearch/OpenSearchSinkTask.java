@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -129,9 +130,8 @@ public class OpenSearchSinkTask extends SinkTask {
     } catch (IllegalStateException e) {
       log.debug("Tried to flush data to OpenSearch, but BulkProcessor is already closed.", e);
     }
-    Map<TopicPartition, OffsetAndMetadata> offsets = offsetTracker.offsets();
-    log.debug("preCommitting offsets {}", offsets);
-    return offsets;
+    client.waitForInFlightRequests();
+    return offsetTracker.offsets();
   }
 
   @Override

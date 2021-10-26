@@ -247,13 +247,6 @@ public class OpenSearchClient {
     bulkProcessor.flush();
   }
 
-  public void waitForInFlightRequests() {
-    // TODO notify
-    while (numBufferedRecords.get() > 0) {
-      clock.sleep(WAIT_TIME_MS);
-    }
-  }
-
   /**
    * Checks whether the index already has a mapping or not.
    * @param index the index to check
@@ -572,7 +565,7 @@ public class OpenSearchClient {
    *
    * @return true if a response has failed, false if none have failed
    */
-  public boolean isFailed() {
+  private boolean isFailed() {
     return error.get() != null;
   }
 

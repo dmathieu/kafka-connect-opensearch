@@ -10,8 +10,8 @@ It allows runnig a [Kafka Connector](http://kafka.apache.org/documentation.html#
 Each release publishes a JAR of the package which can be downloaded and used directly.
 
 ```
-KAFKA_CONNECT_OPENSEARCH_VERSION=0.0.1
-curl -o /tmp/kafka-connect-opensearch.jar https://github.com/dmathieu/kafka-connect-opensearch/releases/download/${KAFKA_CONNECT_OPENSEARCH_VERSION}/kafka-connect-opensearch.jar
+KAFKA_CONNECT_OPENSEARCH_VERSION=0.0.2
+curl -L -o /tmp/kafka-connect-opensearch.jar https://github.com/dmathieu/kafka-connect-opensearch/releases/download/${KAFKA_CONNECT_OPENSEARCH_VERSION}/kafka-connect-opensearch.jar
 ```
 
 Once you have the JAR file, move it to a path recognised by Java, such as `/usr/share/java/`.

@@ -113,7 +113,7 @@ public class OpenSearchSinkTaskIT {
     // Nothing should be committed at this point
     Map<TopicPartition, OffsetAndMetadata> currentOffsets =
             ImmutableMap.of(tp, new OffsetAndMetadata(2));
-    assertThat(task.preCommit(currentOffsets)).isEmpty();
+    assertThat(task.preCommit(currentOffsets)).isEqualTo(currentOffsets);
   }
 
   @Test

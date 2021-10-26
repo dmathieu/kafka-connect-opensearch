@@ -130,7 +130,7 @@ public class OpenSearchSinkTask extends SinkTask {
     } catch (IllegalStateException e) {
       log.debug("Tried to flush data to OpenSearch, but BulkProcessor is already closed.", e);
     }
-    return offsetTracker.offsets();
+    return super.preCommit(currentOffsets);
   }
 
   @Override

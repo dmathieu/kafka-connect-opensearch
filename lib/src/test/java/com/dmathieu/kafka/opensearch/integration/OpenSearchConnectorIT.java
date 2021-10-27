@@ -106,7 +106,11 @@ public class OpenSearchConnectorIT extends OpenSearchConnectorBaseIT {
 
     // The framework commits offsets right before failing the task, verify the failed record's
     // offset is properly included and we can move on
-    assertThat(getConnectorOffset(CONNECTOR_NAME, TOPIC, 0)).isEqualTo(2);
+    TestUtils.waitForCondition(
+        () -> getConnectorOffset(CONNECTOR_NAME, TOPIC, 0) == 2,
+        COMMIT_MAX_DURATION_MS,
+        "Connector tasks did store offsets in time."
+        );
   }
 
   @Test

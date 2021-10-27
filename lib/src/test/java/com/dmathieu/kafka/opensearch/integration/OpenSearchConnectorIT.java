@@ -36,6 +36,8 @@ import org.apache.kafka.clients.admin.ListConsumerGroupOffsetsResult;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.connect.storage.StringConverter;
+import org.apache.kafka.test.TestUtils;
+
 import io.confluent.common.utils.IntegrationTest;
 import org.elasticsearch.client.security.user.User;
 import org.elasticsearch.client.security.user.privileges.Role;
@@ -44,12 +46,17 @@ import org.elasticsearch.search.SearchHit;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("Integration")
 public class OpenSearchConnectorIT extends OpenSearchConnectorBaseIT {
+
+  protected static final long COMMIT_MAX_DURATION_MS = TimeUnit.MINUTES.toMillis(1);
 
   // TODO: test compatibility
 
@@ -100,6 +107,25 @@ public class OpenSearchConnectorIT extends OpenSearchConnectorBaseIT {
     // The framework commits offsets right before failing the task, verify the failed record's
     // offset is properly included and we can move on
     assertThat(getConnectorOffset(CONNECTOR_NAME, TOPIC, 0)).isEqualTo(2);
+  }
+
+  @Test
+  public void testTopicChangingSMT() throws Exception {
+    props.put("transforms", "TimestampRouter");
+    props.put("transforms.TimestampRouter.type", "org.apache.kafka.connect.transforms.TimestampRouter");
+    String timestampFormat = "YYYYMM";
+    SimpleDateFormat formatter = new SimpleDateFormat(timestampFormat);
+    Date date = new Date(System.currentTimeMillis());
+    props.put("transforms.TimestampRouter.topic.format", "route-it-to-here-${topic}-at-${timestamp}");
+    props.put("transforms.TimestampRouter.timestamp.format", timestampFormat);
+    index = String.format("route-it-to-here-%s-at-%s", TOPIC, formatter.format(date));
+    runSimpleTest(props);
+
+    TestUtils.waitForCondition(
+        () -> getConnectorOffset(CONNECTOR_NAME, TOPIC, 0) == NUM_RECORDS,
+        COMMIT_MAX_DURATION_MS,
+        "Connector tasks did store offsets in time."
+        );
   }
 
   private long getConnectorOffset(String connectorName, String topic, int partition) throws Exception {

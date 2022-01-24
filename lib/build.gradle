@@ -42,7 +42,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
     testImplementation 'org.assertj:assertj-core:3.22.0'
     testImplementation 'com.github.tomakehurst:wiremock-jre8:2.32.0'
-    testImplementation 'org.testcontainers:elasticsearch:1.16.2'
+    testImplementation 'org.testcontainers:elasticsearch:1.16.3'
 
     testImplementation 'org.mockito:mockito-core:4.2.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:4.2.0'

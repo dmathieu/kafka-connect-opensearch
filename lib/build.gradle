@@ -17,7 +17,7 @@ ext {
 }
 
 dependencies {
-    implementation 'io.confluent:common-utils:7.0.1'
+    implementation 'io.confluent:common-utils:7.0.2'
 
     implementation "org.elasticsearch.client:elasticsearch-rest-high-level-client:$esVersion"
     implementation "org.elasticsearch:elasticsearch:$esVersion"

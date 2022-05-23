@@ -1,5 +1,8 @@
 # Kafka Connect OpenSearch Connector
 
+**DEPRECATED**: This repoitory is deprecated. Please use [the aiven one](https://github.com/aiven/opensearch-connector-for-apache-kafka) instead.
+
+
 kafka-connect-opensearch is a fork of Confluent's [kafka-connect-elasticsearch](https://github.com/confluentinc/kafka-connect-elasticsearch).  
 It allows runnig a [Kafka Connector](http://kafka.apache.org/documentation.html#connect) for copying data between Kafka and OpenSearch.
 
